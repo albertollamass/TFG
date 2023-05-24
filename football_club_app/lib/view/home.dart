@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:football_club_app/view/perfil.dart';
+import 'package:football_club_app/view/resumen.dart';
 import 'package:football_club_app/view/saldo.dart';
 
 class Home extends StatefulWidget {
@@ -109,7 +110,7 @@ currentPage(int index, int pIndex) {
   final screens = [null, Saldo(), Perfil()];
   if (index.compareTo(0) == 0){
     return TabBarView(children: [
-        buildPage("Resumen"),
+        Resumen(),
         buildPage("Partidos"),
         buildPage("Estadisticas")
       ],);
