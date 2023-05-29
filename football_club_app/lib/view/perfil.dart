@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:football_club_app/view/log_register.dart';
 
 class Perfil extends StatefulWidget {
   const Perfil({super.key});
@@ -35,8 +36,8 @@ class _PerfilState extends State<Perfil> {
             child: SingleChildScrollView(child: Column(
               children: [
                 Container(
-                  margin: EdgeInsets.all(20),
-                  padding: EdgeInsets.all(10),
+                  margin: const EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                       color: Colors.black26,
                       borderRadius: BorderRadius.circular(100),
@@ -50,7 +51,7 @@ class _PerfilState extends State<Perfil> {
                 const SizedBox(height: 10),
                 Text(
                   "Bienvenido " + usuario + "!",
-                  style: TextStyle(
+                  style: const TextStyle(
                       fontSize: 26,
                       fontWeight: FontWeight.bold,
                       color: Colors.white),
@@ -60,15 +61,15 @@ class _PerfilState extends State<Perfil> {
                   width: 380,
                   alignment: Alignment.centerLeft,
                   padding: const EdgeInsets.all(10),
-                  child: Text(
-                    "CUENTA",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                  ),
                   decoration: const BoxDecoration(
                     color: Color(0xffC1C2C6),
                     borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(10),
                         topRight: Radius.circular(10)),
+                  ),
+                  child: const Text(
+                    "CUENTA",
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                   ),
                 ),
                 Container(
@@ -184,15 +185,15 @@ class _PerfilState extends State<Perfil> {
                   width: 380,
                   alignment: Alignment.centerLeft,
                   padding: const EdgeInsets.all(10),
-                  child: Text(
-                    "APP",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                  ),
                   decoration: const BoxDecoration(
                     color: Color(0xffC1C2C6),
                     borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(10),
                         topRight: Radius.circular(10)),
+                  ),
+                  child: const Text(
+                    "APP",
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                   ),
                 ),
                 Container(
@@ -247,7 +248,30 @@ class _PerfilState extends State<Perfil> {
                             )
                           ]),
                           onTap: () {
-                            print("Tapped on container");
+                            AlertDialog alert = AlertDialog(
+                              title: const Text("Cerrar sesión"),
+                              content: const Text("¿Estás seguro de que quieres cerrar sesión?"), 
+                              actions: [
+                                TextButton(
+                                  child: const Text("Cerrar sesión"),
+                                  onPressed: () => {
+                                    Navigator.push(
+                                      context,                                      
+                                      MaterialPageRoute(builder: (context) => LogRegister()),
+                                    )
+                                  },                                   
+                                ),
+                                TextButton(
+                                  child: const Text("Cancel"),
+                                  onPressed: () => {Navigator.pop(context)},                                  
+                                )
+                              ],
+
+
+                            );
+                            showDialog(context: context, builder: (BuildContext context) {
+                              return alert;
+                            });
                           },
                         ),
                         const SizedBox(height: 10,),                        

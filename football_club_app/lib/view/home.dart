@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:football_club_app/view/estadisticas.dart';
+import 'package:football_club_app/view/partidos.dart';
 import 'package:football_club_app/view/perfil.dart';
 import 'package:football_club_app/view/resumen.dart';
 import 'package:football_club_app/view/saldo.dart';
@@ -98,21 +100,14 @@ class _HomeState extends State<Home> {
     );
   }
 }
-Widget buildPage(String text) => Center(
-  child: Text(
-    text,
-    style: TextStyle (fontSize: 28),
-  ),
-);
-
 
 currentPage(int index, int pIndex) {
-  final screens = [null, Saldo(), Perfil()];
+  final screens = [null, const Saldo(), const Perfil()];
   if (index.compareTo(0) == 0){
-    return TabBarView(children: [
+    return const TabBarView(children: [
         Resumen(),
-        buildPage("Partidos"),
-        buildPage("Estadisticas")
+        Partidos(),
+        Estadisticas(),
       ],);
   } else {
     
