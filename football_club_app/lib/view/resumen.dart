@@ -38,7 +38,7 @@ class _ResumenState extends State<Resumen> {
         ),
       ),
       const SizedBox(
-        width: 40,
+        width: 30,
       ),
       Container(
         width: 70,
@@ -103,7 +103,7 @@ class _ResumenState extends State<Resumen> {
             ),
           ),
           const SizedBox(
-            width: 40,
+            width: 30,
           ),
           Container(
             width: 70,

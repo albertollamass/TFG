@@ -8,7 +8,7 @@ class Saldo extends StatefulWidget {
 }
 
 class _SaldoState extends State<Saldo> {
-  int saldo = -10;
+  int saldo = 10;
 
   @override
   Widget build(BuildContext context) {

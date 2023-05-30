@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:football_club_app/view/resumen_partido.dart';
 
 class InfoPartido extends StatefulWidget {
   final DateTime fecha;
@@ -96,7 +97,7 @@ class _InfoPartidoState extends State<InfoPartido> {
               backgroundColor: const Color(0xffd2d2d2),
               body: TabBarView(
                 children: [
-                  Center(child: Text('Que'),),
+                  ResumenPartido(fecha: widget.fecha),
                   Center(child: Text('Que2'),),
                 ],
               )
@@ -106,6 +107,3 @@ class _InfoPartidoState extends State<InfoPartido> {
   }
 }
 
-currentPage(int index, int pIndex) {
-
-}
