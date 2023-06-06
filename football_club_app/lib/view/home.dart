@@ -35,7 +35,8 @@ class _HomeState extends State<Home> {
             length: 3,
             child: Scaffold(
               body: currentPage(currentIndex, previousIndex), 
-              appBar: !hide ? AppBar(                
+              appBar: !hide ? AppBar( 
+                centerTitle: true,               
                 bottom: const TabBar(
                   isScrollable: true,
                   indicatorColor: Colors.white,

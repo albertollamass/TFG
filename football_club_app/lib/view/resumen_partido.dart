@@ -21,6 +21,10 @@ class _ResumenPartidoState extends State<ResumenPartido> {
     ]
   };
 
+  List goles = [
+    {1: {"negro": "Joaquin"}}
+  ];
+
   @override
   Widget build(BuildContext context) {
     List<Widget> equiposW = [];
@@ -39,17 +43,19 @@ class _ResumenPartidoState extends State<ResumenPartido> {
         style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
       ));   
       equiposW.add(
-          const SizedBox(height: 5,),
+          const SizedBox(height: 10,),
         );   
       for (int j = 0; j < equipos.values.elementAt(i).length; j++) {
         equiposW.add(Row(children: [
-          i == 0 ? const Icon(Icons.circle, color: Colors.black,): const Icon(Icons.circle, color: Colors.white,),
-          const SizedBox(width: 5,),
+          i == 0 ? const Icon(Icons.circle, color: Colors.black, size: 40,): const Icon(Icons.circle, color: Colors.white, size: 40,),
+          const SizedBox(width: 20,),
           Text(equipos.values.elementAt(i).elementAt(j).toString(),
-                style: const TextStyle(fontWeight: FontWeight.normal, fontSize: 18),),          
-        ]));
+                style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 20),),
+          const SizedBox(width: 121,),
+          goles[0][1][equipos.keys.elementAt(i).toString()].toString() ==  equipos.values.elementAt(i).elementAt(j).toString() ?  Row(children: [Text(7.toString(), style: const TextStyle(fontSize: 20),), const SizedBox(width: 5),const Icon(Icons.sports_soccer, size: 30,)]): const Text("")
+        ]));        
         equiposW.add(
-          const SizedBox(height: 5,),
+          const SizedBox(height: 10,),
         );
       }
       equiposW.add(

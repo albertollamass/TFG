@@ -47,7 +47,7 @@ class _PartidosState extends State<Partidos> {
           child:
               Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
             Container(
-                margin: const EdgeInsets.fromLTRB(40, 10, 20, 10),
+                margin: const EdgeInsets.fromLTRB(40, 10, 7, 10),
                 padding: const EdgeInsets.all(30),
                 decoration: BoxDecoration(
                     color: Colors.black,
@@ -61,7 +61,7 @@ class _PartidosState extends State<Partidos> {
             Text(resultado["blanco"].toString(),
                 style: const TextStyle(fontSize: 35)),
             Container(
-                margin: const EdgeInsets.fromLTRB(20, 10, 40, 10),
+                margin: const EdgeInsets.fromLTRB(7, 10, 40, 10),
                 padding: const EdgeInsets.all(30),
                 decoration: BoxDecoration(
                     color: Colors.white,

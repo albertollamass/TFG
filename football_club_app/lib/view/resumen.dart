@@ -29,54 +29,54 @@ class _ResumenState extends State<Resumen> {
   Widget build(BuildContext context) {
     //Tabla clasificacion
     List<Widget> mywidgets = [];
-    mywidgets.add(Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-      Container(
-        width: 30,
-        child: const Text(
+    mywidgets.add(Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+      const SizedBox(
+        width: 35,
+        child: Text(
           "Pos",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
         ),
       ),
       const SizedBox(
-        width: 30,
+        width: 10,
       ),
-      Container(
+      const SizedBox(
         width: 70,
-        child: const Text(
+        child: Text(
           "Jugador",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
         ),
       ),
       Container(
-        width: 50,
+        width: 30,
         alignment: Alignment.center,
         child: const Text(
           "PJ",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
         ),
       ),
       Container(
-        width: 50,
+        width: 30,
         alignment: Alignment.center,
         child: const Text(
           "PG",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
         ),
       ),
       Container(
-        width: 50,
+        width: 30,
         alignment: Alignment.center,
         child: const Text(
           "PP",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
         ),
       ),
       Container(
-        width: 50,
+        width: 30,
         alignment: Alignment.center,
         child: const Text(
           "PE",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
         ),
       ),
       Container(
@@ -84,7 +84,7 @@ class _ResumenState extends State<Resumen> {
         alignment: Alignment.center,
         child: const Text(
           "Pts",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
         ),
       ),
     ]));
@@ -93,9 +93,9 @@ class _ResumenState extends State<Resumen> {
     ));
     for (int x = 0; x < jugadores.length; x++) {
       mywidgets.add(Row(
-        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
+          SizedBox(
             width: 30,
             child: Text(
               (x + 1).toString(),
@@ -103,9 +103,9 @@ class _ResumenState extends State<Resumen> {
             ),
           ),
           const SizedBox(
-            width: 30,
+            width: 10,
           ),
-          Container(
+          SizedBox(
             width: 70,
             child: Text(
               jugadores[x],
@@ -113,7 +113,7 @@ class _ResumenState extends State<Resumen> {
             ),
           ),
           Container(
-            width: 50,
+            width: 30,
             alignment: Alignment.center,
             child: Text(
               4.toString(),
@@ -121,7 +121,7 @@ class _ResumenState extends State<Resumen> {
             ),
           ),
           Container(
-            width: 50,
+            width: 30,
             alignment: Alignment.center,
             child: Text(
               4.toString(),
@@ -129,7 +129,7 @@ class _ResumenState extends State<Resumen> {
             ),
           ),
           Container(
-            width: 50,
+            width: 30,
             alignment: Alignment.center,
             child: Text(
               4.toString(),
@@ -137,7 +137,7 @@ class _ResumenState extends State<Resumen> {
             ),
           ),
           Container(
-            width: 50,
+            width: 30,
             alignment: Alignment.center,
             child: Text(
               4.toString(),
@@ -205,7 +205,7 @@ class _ResumenState extends State<Resumen> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Container(
-                          margin: const EdgeInsets.fromLTRB(40, 10, 20, 10),
+                          margin: const EdgeInsets.fromLTRB(40, 10, 7, 10),
                           padding: const EdgeInsets.all(30),
                           decoration: BoxDecoration(
                               color: Colors.black,
@@ -220,7 +220,7 @@ class _ResumenState extends State<Resumen> {
                       Text(resultado["blanco"].toString(),
                           style: const TextStyle(fontSize: 35)),
                       Container(
-                          margin: const EdgeInsets.fromLTRB(20, 10, 40, 10),
+                          margin: const EdgeInsets.fromLTRB(7, 10, 40, 10),
                           padding: const EdgeInsets.all(30),
                           decoration: BoxDecoration(
                               color: Colors.white,
@@ -240,7 +240,7 @@ class _ResumenState extends State<Resumen> {
         //CLASIFICACION
         Container(
           width: 380,
-          alignment: Alignment.centerLeft,
+          alignment: Alignment.center,
           padding: const EdgeInsets.all(10),
           decoration: const BoxDecoration(
             color: Color(0xffC1C2C6),
@@ -254,7 +254,7 @@ class _ResumenState extends State<Resumen> {
         ),
         Container(
             width: 380,
-            alignment: Alignment.centerLeft,
+            alignment: Alignment.center,
             padding: const EdgeInsets.all(10),
             decoration: const BoxDecoration(
               color: Color(0xffE0DEE4),
@@ -262,13 +262,13 @@ class _ResumenState extends State<Resumen> {
                   bottomLeft: Radius.circular(10),
                   bottomRight: Radius.circular(10)),
             ),
-            child: Column(children: mywidgets))
+            child: Column(children: mywidgets,))
       ],
     );
   }
 }
 
-weekdayToString(int weekday) {
+weekdayToString(int? weekday) {
   if (weekday == 1) {
     return "Lunes";
   } else if (weekday == 2) {
@@ -286,7 +286,8 @@ weekdayToString(int weekday) {
   }
 }
 
-monthToString(int month) {
+
+monthToString(int? month) {
   if (month == 1) {
     return "Enero";
   } else if (month == 2) {

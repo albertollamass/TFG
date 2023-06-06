@@ -11,7 +11,7 @@ class _EstadisticasState extends State<Estadisticas> {
   var goles = {
     "Rafa": 13,
     "Jose": 15,
-    "Juanjo": 9,
+    "Juanjo": 16,
     "Nene": 2,
     "Sam": 7,
     "Joseles": 9,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:football_club_app/view/highlights_partido.dart';
 import 'package:football_club_app/view/resumen_partido.dart';
 
 class InfoPartido extends StatefulWidget {
@@ -98,7 +99,7 @@ class _InfoPartidoState extends State<InfoPartido> {
               body: TabBarView(
                 children: [
                   ResumenPartido(fecha: widget.fecha),
-                  Center(child: Text('Que2'),),
+                  HighlightsPartido(resultado: widget.resultado,),
                 ],
               )
             ))

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:football_club_app/view/history.dart';
 
 class Saldo extends StatefulWidget {
   const Saldo({super.key});
@@ -34,7 +35,12 @@ class _SaldoState extends State<Saldo> {
             actions: [
               IconButton(
                 icon: const Icon(Icons.history, size: 29),
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => History()),
+            );
+                },
               ),
             ],
             automaticallyImplyLeading: false,
@@ -48,7 +54,7 @@ class _SaldoState extends State<Saldo> {
                 children: [
                   const Text("SALDO", style: TextStyle(color: Colors.white, fontSize: 25, fontWeight: FontWeight.bold),),
                   const SizedBox(height: 30),
-                  Text(saldo.toString() + " €", style: TextStyle(color: Colors.white, fontSize: 50, fontWeight: FontWeight.bold),),
+                  Text("$saldo €", style: const TextStyle(color: Colors.white, fontSize: 50, fontWeight: FontWeight.bold),),
                   const SizedBox(height: 30),
                   Container(
                     height: 221,
