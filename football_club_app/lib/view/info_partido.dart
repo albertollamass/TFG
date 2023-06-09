@@ -6,8 +6,9 @@ import 'package:football_club_app/view/resumen_partido.dart';
 class InfoPartido extends StatefulWidget {
   final DateTime fecha;
   final Map<String, int> resultado;
+  final bool esAdmin;
 
-  const InfoPartido({Key? key, required this.fecha, required this.resultado})
+  const InfoPartido({Key? key, required this.fecha, required this.resultado, this.esAdmin = false})
       : super(key: key);
 
   @override
@@ -21,7 +22,7 @@ class _InfoPartidoState extends State<InfoPartido> {
     return Stack(
       children: [
         DefaultTabController(
-            length: 2,
+            length: 1,
             child: Scaffold(
               floatingActionButton: SizedBox(                
                 width: 70,
@@ -55,11 +56,11 @@ class _InfoPartidoState extends State<InfoPartido> {
                         "RESUMEN",
                         style: tabBarStyle,
                       )),
-                      Tab(
-                          child: Text(
-                        "HIGHLIGHTS",
-                        style: tabBarStyle,
-                      )),
+                      // Tab(
+                      //     child: Text(
+                      //   "HIGHLIGHTS",
+                      //   style: tabBarStyle,
+                      // )),
                     ]),
                 title: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -72,13 +73,13 @@ class _InfoPartidoState extends State<InfoPartido> {
                               borderRadius: BorderRadius.circular(100),
                               border:
                                   Border.all(width: 2, color: Colors.white))),
-                      Text(
+                      widget.resultado["negro"] !>= 0 ? Text(
                         widget.resultado["negro"].toString(),
                         style: const TextStyle(fontSize: 45),
-                      ),
+                      ):const Text(""),
                       const Text(" - ", style: TextStyle(fontSize: 45)),
-                      Text(widget.resultado["blanco"].toString(),
-                          style: const TextStyle(fontSize: 45)),
+                      widget.resultado["blanco"] !>= 0 ? Text(widget.resultado["blanco"].toString(),
+                          style: const TextStyle(fontSize: 45)): const Text(""),
                       Container(
                           margin: const EdgeInsets.fromLTRB(20, 10, 10, 10),
                           padding: const EdgeInsets.all(40),
@@ -98,8 +99,8 @@ class _InfoPartidoState extends State<InfoPartido> {
               backgroundColor: const Color(0xffd2d2d2),
               body: TabBarView(
                 children: [
-                  ResumenPartido(fecha: widget.fecha),
-                  HighlightsPartido(resultado: widget.resultado,),
+                  ResumenPartido(fecha: widget.fecha, esAdmin: widget.esAdmin),
+                  //HighlightsPartido(resultado: widget.resultado,),
                 ],
               )
             ))

@@ -4,6 +4,7 @@ import 'package:football_club_app/view/admin_partidos.dart';
 import 'package:football_club_app/view/admin_usuarios.dart';
 import 'package:football_club_app/view/log_register.dart';
 import 'package:football_club_app/view/notificaciones.dart';
+import 'package:football_club_app/view/tus_estadisticas.dart';
 
 import '../model/socio.dart';
 import 'datos_personales.dart';
@@ -135,7 +136,7 @@ class _PerfilState extends State<Perfil> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const Notificaciones()),
+                        builder: (context) => Notificaciones(esAdmin: esAdmin,)),
                   );
                 },
               ),
@@ -169,7 +170,11 @@ class _PerfilState extends State<Perfil> {
                   )
                 ]),
                 onTap: () {
-                  print("Tapped on STATS");
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const TusEstadisticas()),
+                  );
                 },
               ),
             ],
