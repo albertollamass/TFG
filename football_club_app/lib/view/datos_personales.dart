@@ -60,7 +60,7 @@ class _DatosPersonalesState extends State<DatosPersonales> {
                 onPressed: (() async => {                  
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const Perfil()),                    
+                    MaterialPageRoute(builder: (context) => Perfil(socio: widget.socio,)),                    
                   )                  
                 }),
                 style: styleInic, 

@@ -5,8 +5,12 @@ import 'package:football_club_app/view/perfil.dart';
 import 'package:football_club_app/view/resumen.dart';
 import 'package:football_club_app/view/saldo.dart';
 
+import '../model/socio.dart';
+
 class Home extends StatefulWidget {
-  const Home({super.key});
+  final Socio socio;
+
+  const Home({Key? key, required this.socio}) : super(key: key);
 
   @override
   State<Home> createState() => _HomeState();
@@ -34,7 +38,7 @@ class _HomeState extends State<Home> {
         DefaultTabController(
             length: 3,
             child: Scaffold(
-              body: currentPage(currentIndex, previousIndex), 
+              body: currentPage(currentIndex, previousIndex, widget.socio), 
               appBar: !hide ? AppBar( 
                 centerTitle: true,               
                 bottom: const TabBar(
@@ -102,8 +106,8 @@ class _HomeState extends State<Home> {
   }
 }
 
-currentPage(int index, int pIndex) {
-  final screens = [null, const Saldo(), const Perfil()];
+currentPage(int index, int pIndex, Socio socio) {
+  final screens = [null, const Saldo(), Perfil(socio: socio,)];
   if (index.compareTo(0) == 0){
     return const TabBarView(children: [
         Resumen(),

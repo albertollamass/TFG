@@ -10,15 +10,14 @@ import '../model/socio.dart';
 import 'datos_personales.dart';
 
 class Perfil extends StatefulWidget {
-  const Perfil({super.key});
+  final Socio socio;
+  const Perfil({Key? key, required this.socio}) : super(key: key);
 
   @override
   State<Perfil> createState() => _PerfilState();
 }
 
 class _PerfilState extends State<Perfil> {
-  String usuario = "Pablo Perez";
-  Socio socio = Socio("Pablo", "Perez", "pabloperez@gmail.com", 611611611, "pablo0_", 50);
   bool esAdmin = true;
   @override
   Widget build(BuildContext context) {
@@ -38,7 +37,7 @@ class _PerfilState extends State<Perfil> {
       ),
       const SizedBox(height: 10),
       Text(
-        "Bienvenido $usuario!",
+        "Bienvenido ${widget.socio.nombre}!",
         style: const TextStyle(
             fontSize: 26, fontWeight: FontWeight.bold, color: Colors.white),
       ),
@@ -99,7 +98,7 @@ class _PerfilState extends State<Perfil> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => DatosPersonales(socio: socio,)),
+                        builder: (context) => DatosPersonales(socio: widget.socio,)),
                   );
                 },
               ),
@@ -420,7 +419,7 @@ class _PerfilState extends State<Perfil> {
                       },
                     ),
                     TextButton(
-                      child: const Text("Cancel"),
+                      child: const Text("Cancelar"),
                       onPressed: () => {Navigator.pop(context)},
                     )
                   ],

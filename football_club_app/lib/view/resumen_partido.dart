@@ -118,11 +118,13 @@ class _ResumenPartidoState extends State<ResumenPartido> {
                   }).toList(),
                 )
               : const Text(""),
-          const SizedBox(width: 5),
-                  const Icon(
+          
+          widget.esAdmin ? const SizedBox(width: 5) : const Text(""),
+          widget.esAdmin ? const Icon(
                     Icons.sports_soccer,
                     size: 30,
-                  )
+                  ) : const Text("")
+          
         ]));
         equiposW.add(
           const SizedBox(

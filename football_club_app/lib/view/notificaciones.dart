@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:football_club_app/view/notificacion_lectura.dart';
 import 'package:football_club_app/view/resumen.dart';
 
+import '../custom_widgets/multi_select.dart';
 import '../model/notificacion.dart';
+import '../model/socio.dart';
 
 class Notificaciones extends StatefulWidget {
   final bool esAdmin;
@@ -18,6 +20,34 @@ class _NotificacionesState extends State<Notificaciones> {
     Notificacion("Prueba de descripción", "Juan", DateTime.now()),
     Notificacion("Prueba de descripción", "Pepe", DateTime.now())
   ];
+
+  List<String> selectedItems = [];
+
+  void showMultiSelect() async {
+    List<Socio> socios = [
+      Socio("Pablo", "Perez", "pabloperez@gmail.com", 611611611, "pablo0_", 50),
+      Socio("Juan", "Perez", "pabloperez@gmail.com", 611611611, "pablo0_", 10),
+      Socio("Luis", "Perez", "pabloperez@gmail.com", 611611611, "pablo0_", -30),
+      Socio(
+          "Miguel", "Perez", "pabloperez@gmail.com", 611611611, "pablo0_", -20),
+    ];
+    List<String> nombreSocios = [];
+    for (int i = 0; i < socios.length; i++) {
+      nombreSocios.add(socios[i].nombre);
+    }
+  final List<String>? results = await showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return MultiSelect(items: nombreSocios);
+    },
+  );
+
+  if (results != null) {
+    setState(() {
+      selectedItems = results;
+    });
+  }
+}
   // Notificacion n1 = Notificacion("Prueba de descripción", "Juan", DateTime.now());
   // Notificacion n2 = Notificacion("Prueba de descripción", "Pepe", DateTime.now());
   @override
@@ -41,9 +71,6 @@ class _NotificacionesState extends State<Notificaciones> {
                 color: Colors.white,
               ),
             ),
-            const SizedBox(
-              width: 10,
-            ),
             Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(
                 "${notificaciones[i].emisor}",
@@ -61,7 +88,7 @@ class _NotificacionesState extends State<Notificaciones> {
               ),
             ]),
             const SizedBox(
-              width: 30,
+              width: 20,
             ),
             notificaciones[i].leida
                 ? Container(
@@ -138,10 +165,65 @@ class _NotificacionesState extends State<Notificaciones> {
             child: FloatingActionButton(
               backgroundColor: const Color.fromARGB(255, 130, 167, 254),
               onPressed: (() {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const Notificaciones(esAdmin: true,)),                    
+                AlertDialog alert = AlertDialog(
+                    title: const Text("Enviar notificacion"),
+                    content: SizedBox(
+                      height: 400,
+                      child:                         
+                        Column(
+                          children: [
+                            ElevatedButton(
+                                onPressed: showMultiSelect,
+                                child: const Text("Selecciona socio")),
+                            const Divider(
+                              height: 30,
+                            ),
+                            // display selected items
+                            Wrap(
+                              children: selectedItems
+                                  .map((e) => Chip(
+                                        label: Text(e),
+                                      ))
+                                  .toList(),
+                            ),
+                            const Divider(
+                              height: 30,
+                            ),
+                            const Text("Escribe el asunto de la notificacion:"),
+                            TextFormField(maxLines: 1,),
+                            const Divider(
+                              height: 20,
+                            ),
+                            const Text("Escribe el mensaje de la notificacion:"),
+                            TextFormField(maxLines: 5,)
+                          ],
+                        ),                      
+                    ),
+                    actions: [
+                      TextButton(
+                        child: const Text(
+                          "Enviar notificacion",
+                          style: TextStyle(color: Colors.black),
+                        ),
+                        onPressed: () => {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>  const Notificaciones(esAdmin: true,)),
+                          )
+                        },
+                      ),
+                      TextButton(
+                        child: const Text("Cancelar"),
+                        onPressed: () => {Navigator.pop(context)},
+                      )
+                    ],
                   );
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return alert;
+                      });
               }),
               child: const Icon(
                 Icons.add,

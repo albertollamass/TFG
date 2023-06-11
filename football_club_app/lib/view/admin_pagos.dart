@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:football_club_app/custom_widgets/multi_select.dart';
 
 import '../model/socio.dart';
 
@@ -10,6 +11,35 @@ class AdminPagos extends StatefulWidget {
 }
 
 class _AdminPagosState extends State<AdminPagos> {
+
+  List<String> selectedItems = [];
+
+  void showMultiSelect() async {
+    List<Socio> socios = [
+      Socio("Pablo", "Perez", "pabloperez@gmail.com", 611611611, "pablo0_", 50),
+      Socio("Juan", "Perez", "pabloperez@gmail.com", 611611611, "pablo0_", 10),
+      Socio("Luis", "Perez", "pabloperez@gmail.com", 611611611, "pablo0_", -30),
+      Socio(
+          "Miguel", "Perez", "pabloperez@gmail.com", 611611611, "pablo0_", -20),
+    ];
+    List<String> nombreSocios = [];
+    for (int i = 0; i < socios.length; i++) {
+      nombreSocios.add(socios[i].nombre);
+    }
+  final List<String>? results = await showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return MultiSelect(items: nombreSocios);
+    },
+  );
+
+  if (results != null) {
+    setState(() {
+      selectedItems = results;
+    });
+  }
+}
+
   @override
   Widget build(BuildContext context) {
     List<Widget> pagosW = [];
@@ -21,8 +51,9 @@ class _AdminPagosState extends State<AdminPagos> {
       Socio(
           "Miguel", "Perez", "pabloperez@gmail.com", 611611611, "pablo0_", -20),
     ];
-
+    List<String> nombreSocios = [];
     for (int i = 0; i < socios.length; i++) {
+      nombreSocios.add(socios[i].nombre);
       pagosW.add(Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -85,6 +116,9 @@ class _AdminPagosState extends State<AdminPagos> {
       ));
     }
 
+
+
+
     return Scaffold(
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         floatingActionButton: Row(
@@ -93,7 +127,62 @@ class _AdminPagosState extends State<AdminPagos> {
             FloatingActionButton(
                 heroTag: "btnAdd",
                 backgroundColor: const Color(0xff0AD905),
-                onPressed: () {},
+                onPressed: () {
+                  AlertDialog alert = AlertDialog(
+                    title: const Text("Añadir ingreso"),
+                    content: Container(
+                      height: 250,
+                      child: 
+                        Column(
+                          children: [
+                            ElevatedButton(
+                                onPressed: showMultiSelect,
+                                child: const Text("Selecciona socio")),
+                            const Divider(
+                              height: 30,
+                            ),
+                            // display selected items
+                            Wrap(
+                              children: selectedItems
+                                  .map((e) => Chip(
+                                        label: Text(e),
+                                      ))
+                                  .toList(),
+                            ),
+                            const Divider(
+                              height: 30,
+                            ),
+                            const Text("Escribe la cantidad a ingresar:"),
+                            TextFormField()
+                          ],
+                        ),                    
+                    ),
+                    actions: [
+                      TextButton(
+                        child: const Text(
+                          "Añadir ingreso",
+                          style: TextStyle(color: Color(0xff0AD905)),
+                        ),
+                        onPressed: () => {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const AdminPagos()),
+                          )
+                        },
+                      ),
+                      TextButton(
+                        child: const Text("Cancelar"),
+                        onPressed: () => {Navigator.pop(context)},
+                      )
+                    ],
+                  );
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return alert;
+                      });
+                },
                 child: const Icon(
                   Icons.payment,
                   size: 35,
@@ -101,19 +190,75 @@ class _AdminPagosState extends State<AdminPagos> {
             FloatingActionButton(
                 heroTag: "btnDelete",
                 backgroundColor: const Color(0xffC10707),
-                onPressed: () {},
+                onPressed: () {
+                  AlertDialog alert = AlertDialog(
+                    title: const Text("Añadir pago"),
+                    content: Container(
+                      height: 250,
+                      child:                         
+                        Column(
+                          children: [
+                            ElevatedButton(
+                                onPressed: showMultiSelect,
+                                child: const Text("Selecciona socio")),
+                            const Divider(
+                              height: 30,
+                            ),
+                            // display selected items
+                            Wrap(
+                              children: selectedItems
+                                  .map((e) => Chip(
+                                        label: Text(e),
+                                      ))
+                                  .toList(),
+                            ),
+                            const Divider(
+                              height: 30,
+                            ),
+                            const Text("Escribe la cantidad a pagar:"),
+                            TextFormField()
+                          ],
+                        ),                      
+                    ),
+                    actions: [
+                      TextButton(
+                        child: const Text(
+                          "Añadir pago",
+                          style: TextStyle(color: Color(0xffC10707)),
+                        ),
+                        onPressed: () => {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const AdminPagos()),
+                          )
+                        },
+                      ),
+                      TextButton(
+                        child: const Text("Cancelar"),
+                        onPressed: () => {Navigator.pop(context)},
+                      )
+                    ],
+                  );
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return alert;
+                      });
+
+                },
                 child: const Icon(
                   Icons.delete,
                   size: 35,
                 ))
           ],
         ),
-        bottomNavigationBar: BottomAppBar(                
-                color: const Color(0xffffffff),
-                notchMargin: 5.0,
-                shape: const CircularNotchedRectangle(),
-                child: Container(height: 30),                
-              ),
+        bottomNavigationBar: BottomAppBar(
+          color: const Color(0xffffffff),
+          notchMargin: 5.0,
+          shape: const CircularNotchedRectangle(),
+          child: Container(height: 30),
+        ),
         appBar: AppBar(
           title: const Text(
             "GESTIONAR PAGOS",
