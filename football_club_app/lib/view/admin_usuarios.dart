@@ -14,10 +14,10 @@ class AdminUsuarios extends StatefulWidget {
 
 class _AdminUsuariosState extends State<AdminUsuarios> {
   List<Socio> socios = [
-    Socio("Pablo", "Perez", "pabloperez@gmail.com", 611611611, "pablo0_", 50),
-    Socio("Juan", "Perez", "pabloperez@gmail.com", 611611611, "pablo0_", 50),
-    Socio("Luis", "Perez", "pabloperez@gmail.com", 611611611, "pablo0_", 50),
-    Socio("Miguel", "Perez", "pabloperez@gmail.com", 611611611, "pablo0_", 50),
+    Socio("Pablo", "Perez", "pabloperez@gmail.com", 611611611, "pablo0_", 50, "Pablito"),
+    Socio("Juan", "Perez", "pabloperez@gmail.com", 611611611, "pablo0_", 50, "Pablito"),
+    Socio("Luis", "Perez", "pabloperez@gmail.com", 611611611, "pablo0_", 50, "Pablito"),
+    Socio("Miguel", "Perez", "pabloperez@gmail.com", 611611611, "pablo0_", 50, "Pablito"),
   ];
   @override
   Widget build(BuildContext context) {

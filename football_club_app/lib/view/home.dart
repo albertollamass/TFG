@@ -61,7 +61,8 @@ class _HomeState extends State<Home> {
               bottomNavigationBar: BottomNavigationBar(
                 backgroundColor: const Color(0xff2B4EA1),
                 currentIndex: currentIndex,
-                showUnselectedLabels: false,
+                unselectedItemColor: const Color.fromARGB(140, 255, 255, 255),
+                showUnselectedLabels: true,
                 showSelectedLabels: true,
                 onTap: (int index) {
                   setState(() {
@@ -85,8 +86,8 @@ class _HomeState extends State<Home> {
                     backgroundColor:  Color(0xff2B4EA1),
                   ),
                   BottomNavigationBarItem(
-                    activeIcon: Icon(Icons.shopping_cart, color: Colors.white),
-                    icon: Icon(Icons.shopping_cart,
+                    activeIcon: Icon(Icons.euro_rounded, color: Colors.white),
+                    icon: Icon(Icons.euro_rounded,
                         color: Color.fromARGB(140, 255, 255, 255)),
                     label: 'Saldo',
                     backgroundColor:  Color(0xff2B4EA1),

@@ -16,11 +16,11 @@ class _AdminPagosState extends State<AdminPagos> {
 
   void showMultiSelect() async {
     List<Socio> socios = [
-      Socio("Pablo", "Perez", "pabloperez@gmail.com", 611611611, "pablo0_", 50),
-      Socio("Juan", "Perez", "pabloperez@gmail.com", 611611611, "pablo0_", 10),
-      Socio("Luis", "Perez", "pabloperez@gmail.com", 611611611, "pablo0_", -30),
+      Socio("Pablo", "Perez", "pabloperez@gmail.com", 611611611, "pablo0_", 50, "Pablito"),
+      Socio("Juan", "Perez", "pabloperez@gmail.com", 611611611, "pablo0_", 10, "Pablito"),
+      Socio("Luis", "Perez", "pabloperez@gmail.com", 611611611, "pablo0_", -30, "Pablito"),
       Socio(
-          "Miguel", "Perez", "pabloperez@gmail.com", 611611611, "pablo0_", -20),
+          "Miguel", "Perez", "pabloperez@gmail.com", 611611611, "pablo0_", -20, "Pablito"),
     ];
     List<String> nombreSocios = [];
     for (int i = 0; i < socios.length; i++) {
@@ -45,11 +45,11 @@ class _AdminPagosState extends State<AdminPagos> {
     List<Widget> pagosW = [];
 
     List<Socio> socios = [
-      Socio("Pablo", "Perez", "pabloperez@gmail.com", 611611611, "pablo0_", 50),
-      Socio("Juan", "Perez", "pabloperez@gmail.com", 611611611, "pablo0_", 10),
-      Socio("Luis", "Perez", "pabloperez@gmail.com", 611611611, "pablo0_", -30),
+      Socio("Pablo", "Perez", "pabloperez@gmail.com", 611611611, "pablo0_", 50, "Pablito"),
+      Socio("Juan", "Perez", "pabloperez@gmail.com", 611611611, "pablo0_", 10, "Pablito"),
+      Socio("Luis", "Perez", "pabloperez@gmail.com", 611611611, "pablo0_", -30, "Pablito"),
       Socio(
-          "Miguel", "Perez", "pabloperez@gmail.com", 611611611, "pablo0_", -20),
+          "Miguel", "Perez", "pabloperez@gmail.com", 611611611, "pablo0_", -20, "Pablito"),
     ];
     List<String> nombreSocios = [];
     for (int i = 0; i < socios.length; i++) {

@@ -9,7 +9,7 @@ class Saldo extends StatefulWidget {
 }
 
 class _SaldoState extends State<Saldo> {
-  int saldo = 10;
+  int saldo = -10;
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +28,7 @@ class _SaldoState extends State<Saldo> {
           backgroundColor: Colors.transparent,
           appBar: AppBar(
             title: const Text(
-              "TUS PAGOS",
+              "MONEDERO",
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
             ),
             centerTitle: true,
@@ -52,9 +52,10 @@ class _SaldoState extends State<Saldo> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  const Text("SALDO", style: TextStyle(color: Colors.white, fontSize: 25, fontWeight: FontWeight.bold),),
-                  const SizedBox(height: 30),
-                  Text("$saldo €", style: const TextStyle(color: Colors.white, fontSize: 50, fontWeight: FontWeight.bold),),
+                  // const Text("SALDO", style: TextStyle(color: Colors.white, fontSize: 25, fontWeight: FontWeight.bold),),
+                  // const SizedBox(height: 30),
+                  saldo >= 0 ? Text("$saldo €", style: const TextStyle(color: Colors.white, fontSize: 50, fontWeight: FontWeight.bold),):
+                  Text("$saldo €", style: const TextStyle(color: Colors.red, fontSize: 50, fontWeight: FontWeight.bold),),
                   const SizedBox(height: 30),
                   Container(
                     height: 221,

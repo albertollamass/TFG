@@ -43,6 +43,11 @@ class _CrearUsuarioState extends State<CrearUsuario> {
                 decoration: const InputDecoration(icon: Icon(Icons.person),hintText: 'Apellidos'),
               ),
             const SizedBox(height: 10,),
+            TextFormField(                  
+                  decoration: const InputDecoration(
+                      icon: Icon(Icons.person)),
+            ),
+            const SizedBox(height: 10,),
             TextFormField(
                 decoration: const InputDecoration(icon: Icon(Icons.email),hintText: 'Correo electrónico'),
               ),

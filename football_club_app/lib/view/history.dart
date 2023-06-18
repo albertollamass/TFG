@@ -81,7 +81,7 @@ class _HistoryState extends State<History> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-              "HISTORIAL DE PAGOS",
+              "HISTORIAL",
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
             ),
             centerTitle: true,

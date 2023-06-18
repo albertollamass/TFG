@@ -19,7 +19,7 @@ class LogIn extends StatefulWidget {
 }
 
 class _LogInState extends State<LogIn> {
-  Socio socio = Socio("Pablo", "Perez", "pabloperez@gmail.com", 611611611, "pablo0_", 50);
+  Socio socio = Socio("Pablo", "Perez", "pabloperez@gmail.com", 611611611, "pablo0_", 50, "pablito");
   bool? recordarCredenciales = false ;
   bool isLoading = false;
   final ButtonStyle styleInic =

@@ -29,14 +29,15 @@ class _TusEstadisticasState extends State<TusEstadisticas> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final ButtonStyle styleInic =
-        ElevatedButton.styleFrom(textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold), backgroundColor: const Color(0xff3C3577), padding: const EdgeInsets.fromLTRB(40.0,16.0,40.0,16.0));
+    final ButtonStyle styleInic = ElevatedButton.styleFrom(
+        textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        backgroundColor: const Color(0xff3C3577),
+        padding: const EdgeInsets.fromLTRB(30.0, 16.0, 30.0, 16.0));
 
     List<Widget> ratingRow = [];
 
-    for (int i = 0; i < 6; i+=2) {
-      ratingRow.add(
-      Row(children: [
+    for (int i = 0; i < 6; i += 2) {
+      ratingRow.add(Row(children: [
         SizedBox(
             width: 80,
             child: Text(
@@ -53,6 +54,7 @@ class _TusEstadisticasState extends State<TusEstadisticas> {
           width: 20,
           child: TextFormField(
             initialValue: jugador[i].value.toString(),
+            maxLength: 2,
           ),
         ),
         const SizedBox(
@@ -61,7 +63,7 @@ class _TusEstadisticasState extends State<TusEstadisticas> {
         SizedBox(
             width: 80,
             child: Text(
-              jugador[i+1].name,
+              jugador[i + 1].name,
               style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Color(0xff5C5858),
@@ -73,29 +75,35 @@ class _TusEstadisticasState extends State<TusEstadisticas> {
         SizedBox(
           width: 20,
           child: TextFormField(
-            initialValue: jugador[i+1].value.toString(),
+            initialValue: jugador[i + 1].value.toString(),
+            maxLength: 2,
           ),
         )
       ]));
     }
     ratingRow.add(
       const SizedBox(
-          height: 20,
-        ),
+        height: 20,
+      ),
     );
     ratingRow.add(
-        ElevatedButton(
-                onPressed: (() async => {                  
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const TusEstadisticas()),                    
-                  )                  
-                }),
-                style: styleInic, 
-                child: const Center(child: Text("Guardar cambios")),
-                
-              ),
-      );
+      ElevatedButton(
+        onPressed: (() async => {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const TusEstadisticas()),
+              )
+            }),
+        style: styleInic,
+        child: const Center(child: Text("Guardar cambios")),
+      ),
+    );
+    ratingRow.add(
+      const SizedBox(
+        height: 20,
+      ),
+    );
 
     return Scaffold(
         appBar: AppBar(
@@ -111,24 +119,45 @@ class _TusEstadisticasState extends State<TusEstadisticas> {
             child: Container(
                 // height: 780,
                 // width: 370,
-                padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
+                padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   color: const Color(0xffffffff),
                 ),
-                child: Stack(alignment: Alignment.bottomCenter, children: [
-                  Hexagon(screenWidth: screenWidth),
-                  Container(
-                    // color: Colors.amber, 
-                    padding: const EdgeInsets.fromLTRB(50, 30, 50, 0),                   
-                    alignment: Alignment.centerRight,
-                    height: 380,
-                    width: 400,
-                    child: Column(
-                      children: ratingRow,
-                    ),
-                  )
-                ]))));
+                child: ListView(
+                  children: [
+                    Column(
+                      //alignment: Alignment.bottomCenter,
+                      children: [
+                        Container(
+                          // color: Colors.amber,
+                          padding: const EdgeInsets.fromLTRB(40, 30, 40, 0),
+                          alignment: Alignment.centerRight,
+                          height: 400,
+                          width: screenWidth,
+                          child: Hexagon(screenWidth: screenWidth / 1.25),
+                        ),
+                        // Container(
+                        //   height: 100,
+                        //   decoration: BoxDecoration(
+                        //       color: Color(0xff2B4EA1),
+                              
+                        //   ),
+                        // ),
+                        Container(
+                          // color: Colors.amber,
+                          padding: const EdgeInsets.fromLTRB(50, 30, 40, 0),
+                          alignment: Alignment.centerRight,
+                          height: 500,
+                          width: screenWidth,
+                          child: Column(
+                            children: ratingRow,
+                          ),
+                        )
+                      ],
+                    )
+                  ],
+                ))));
   }
 }
 
@@ -136,7 +165,7 @@ class Hexagon extends StatelessWidget {
   const Hexagon({Key? key, required this.screenWidth}) : super(key: key);
   final double screenWidth;
 
-  double get diameter => screenWidth - 100;
+  double get diameter => screenWidth / 1.25 - 85;
   double get radius => diameter / 2;
 
   @override
@@ -230,7 +259,7 @@ class Labels extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final center = Offset(diameter / 2 + 50, diameter / 2 + 50);
+    final center = Offset(diameter / 2 + 80, diameter / 2 + 80);
     final style = Theme.of(context)
         .textTheme
         .titleMedium
@@ -241,7 +270,7 @@ class Labels extends StatelessWidget {
         Positioned.fromRect(
             rect: Rect.fromCenter(
                 center: Offset(
-                  radius * cos(pi * 2 * 30 / 360) + center.dx + 30,
+                  radius * cos(pi * 2 * 30 / 360) + center.dx + 40,
                   radius * sin(pi * 2 * 30 / 360) + center.dy,
                 ),
                 width: 100,
@@ -289,7 +318,7 @@ class Labels extends StatelessWidget {
         Positioned.fromRect(
             rect: Rect.fromCenter(
                 center: Offset(
-                  radius * cos(pi * 2 * 150 / 360) + center.dx - 30,
+                  radius * cos(pi * 2 * 150 / 360) + center.dx - 40,
                   radius * sin(pi * 2 * 150 / 360) + center.dy,
                 ),
                 width: 100,
@@ -313,7 +342,7 @@ class Labels extends StatelessWidget {
         Positioned.fromRect(
             rect: Rect.fromCenter(
                 center: Offset(
-                  radius * cos(pi * 2 * 210 / 360) + center.dx - 30,
+                  radius * cos(pi * 2 * 210 / 360) + center.dx - 40,
                   radius * sin(pi * 2 * 210 / 360) + center.dy,
                 ),
                 width: 100,
@@ -361,7 +390,7 @@ class Labels extends StatelessWidget {
         Positioned.fromRect(
             rect: Rect.fromCenter(
                 center: Offset(
-                  radius * cos(pi * 2 * 330 / 360) + center.dx + 30,
+                  radius * cos(pi * 2 * 330 / 360) + center.dx + 40,
                   radius * sin(pi * 2 * 330 / 360) + center.dy,
                 ),
                 width: 100,
@@ -423,7 +452,6 @@ class HexagonPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    // TODO: implement shouldRepaint
     return true;
   }
 }

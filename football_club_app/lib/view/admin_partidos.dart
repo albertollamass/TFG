@@ -200,6 +200,7 @@ class _AdminPartidosState extends State<AdminPartidos> {
                           const EdgeInsets.fromLTRB(10.0, 16.0, 10.0, 16.0)),
                   child: const Center(child: Text("Anular partido")),
                 ),
+              if (partidos[i].fechaPartido.compareTo(DateTime.now()) > 0)
               ElevatedButton(
                 onPressed: (() async => {
                       Navigator.push(

@@ -35,15 +35,19 @@ class _RegisterState extends State<Register> {
             padding: const EdgeInsets.all(10),      
             children: [
             TextFormField(
-                decoration: const InputDecoration(icon: Icon(Icons.person),hintText: 'Nombre'),
+                decoration: const InputDecoration(icon: Icon(Icons.person),hintText: 'Nombre *'),
               ),
             const SizedBox(height: 10,),
             TextFormField(
-                decoration: const InputDecoration(icon: Icon(Icons.person),hintText: 'Apellidos'),
+                decoration: const InputDecoration(icon: Icon(Icons.person),hintText: 'Apellidos *'),
               ),
             const SizedBox(height: 10,),
             TextFormField(
-                decoration: const InputDecoration(icon: Icon(Icons.email),hintText: 'Correo electrónico'),
+                decoration: const InputDecoration(icon: Icon(Icons.person),hintText: 'Alias'),
+              ),
+            const SizedBox(height: 10,),
+            TextFormField(
+                decoration: const InputDecoration(icon: Icon(Icons.email),hintText: 'Correo electrónico *'),
               ),
             const SizedBox(height: 10,),
             TextFormField(
@@ -51,12 +55,14 @@ class _RegisterState extends State<Register> {
               ),
             const SizedBox(height: 10,),
             TextFormField(
-                decoration: const InputDecoration(icon: Icon(Icons.password),hintText: 'Contraseña'),
+                decoration: const InputDecoration(icon: Icon(Icons.password),hintText: 'Contraseña *'),
               ),
             const SizedBox(height: 10,),
             TextFormField(
-                decoration: const InputDecoration(icon: Icon(Icons.password),hintText: 'Confirmar contraseña'),
+                decoration: const InputDecoration(icon: Icon(Icons.password),hintText: 'Confirmar contraseña *'),
               ),
+            const SizedBox(height: 10,),
+            Text("(*) Obligatorio", style: TextStyle(fontSize: 16, color: Colors.red[400]),),
             const SizedBox(height: 30,),
             CheckboxListTile(
                 title: const Text(style: TextStyle(), textAlign: TextAlign.justify,"Para completar tu registro, debes aceptar los Términos de Uso y el procesamiento y tratamiento de tus datos personales conforme a lo dispuesto en las Políticas de Privacidad."),

@@ -1,13 +1,23 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+
 import 'package:flutter/material.dart';
+import 'package:football_club_app/view/draggable_list.dart';
 import 'package:football_club_app/view/resumen.dart';
 
 class ResumenPartido extends StatefulWidget {
   DateTime fecha;
   final bool esAdmin;
+  final Map<String, int> resultado;
+
   TimeOfDay horaPartido = TimeOfDay.now();
 
-  ResumenPartido({Key? key, required this.fecha, this.esAdmin = false})
-      : super(key: key);
+  ResumenPartido({
+    Key? key,
+    required this.fecha,
+    required this.esAdmin,
+    required this.resultado,
+  }) : super(key: key);
+
   @override
   State<ResumenPartido> createState() => _ResumenPartidoState();
 }
@@ -33,12 +43,28 @@ class _ResumenPartidoState extends State<ResumenPartido> {
 
   @override
   Widget build(BuildContext context) {
-    const List<String> list = <String>['-1', '1', '2', '3', '4'];
+    const List<String> list = <String>['-1', '1', '2', '3', '4'];    
     String dropdownValue = list.first;
     List<Widget> equiposW = [];
-    equiposW.add(const Text(
-      "EQUIPOS",
-      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+    equiposW.add(Row(
+      children: [
+        const Text(
+          "EQUIPOS",
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+        ),
+        const SizedBox(
+        width: 20,
+      ),
+        widget.esAdmin
+              ? InkWell(child: const Icon(Icons.edit), onTap: () async {
+                 Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>  EditarEquipos()),
+                        );
+              })
+              : const Text(""),
+      ],
     ));
     equiposW.add(
       const SizedBox(
@@ -67,19 +93,18 @@ class _ResumenPartidoState extends State<ResumenPartido> {
                   Icons.circle,
                   color: Colors.white,
                   size: 40,
-                ),
+                ),          
           const SizedBox(
             width: 20,
           ),
           Container(
             width: 170,
-            child: 
-              Text(
-                equipos.values.elementAt(i).elementAt(j).toString(),
-                style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 20),
-              ),            
+            child: Text(
+              equipos.values.elementAt(i).elementAt(j).toString(),
+              style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 20),
+            ),
           ),
-          
+
           // goles[0][1][equipos.keys.elementAt(i).toString()].toString() ==
           //         equipos.values.elementAt(i).elementAt(j).toString()
           //     ? Row(children: [
@@ -118,13 +143,14 @@ class _ResumenPartidoState extends State<ResumenPartido> {
                   }).toList(),
                 )
               : const Text(""),
-          
+
           widget.esAdmin ? const SizedBox(width: 5) : const Text(""),
-          widget.esAdmin ? const Icon(
-                    Icons.sports_soccer,
-                    size: 30,
-                  ) : const Text("")
-          
+          widget.esAdmin
+              ? const Icon(
+                  Icons.sports_soccer,
+                  size: 30,
+                )
+              : const Text("")
         ]));
         equiposW.add(
           const SizedBox(
@@ -142,6 +168,36 @@ class _ResumenPartidoState extends State<ResumenPartido> {
     return ListView(padding: const EdgeInsets.all(20), children: [
       Column(
         children: [
+          Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+            Container(
+                margin: const EdgeInsets.fromLTRB(10, 10, 20, 10),
+                padding: const EdgeInsets.all(40),
+                decoration: BoxDecoration(
+                    color: Colors.black,
+                    borderRadius: BorderRadius.circular(100),
+                    border: Border.all(width: 2, color: Colors.white))),
+            widget.resultado["negro"]! >= 0
+                ? Text(
+                    widget.resultado["negro"].toString(),
+                    style: const TextStyle(fontSize: 45),
+                  )
+                : const Text(""),
+            const Text(" - ", style: TextStyle(fontSize: 45)),
+            widget.resultado["blanco"]! >= 0
+                ? Text(widget.resultado["blanco"].toString(),
+                    style: const TextStyle(fontSize: 45))
+                : const Text(""),
+            Container(
+                margin: const EdgeInsets.fromLTRB(20, 10, 10, 10),
+                padding: const EdgeInsets.all(40),
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(100),
+                    border: Border.all(width: 2, color: Colors.black))),
+          ]),
+          const SizedBox(
+            height: 20,
+          ),
           Container(
             width: 380,
             alignment: Alignment.centerLeft,
@@ -264,8 +320,8 @@ class _ResumenPartidoState extends State<ResumenPartido> {
                                   //You can format date as per your need
 
                                   setState(() {
-                                    widget.horaPartido =
-                                        pickedDate; //set foratted date to TextField value.
+                                    widget.horaPartido = pickedDate;
+                                    //set foratted date to TextField value.
                                   });
                                 } else {
                                   print("Date is not selected");
@@ -285,7 +341,9 @@ class _ResumenPartidoState extends State<ResumenPartido> {
                       width: 20,
                     ),
                     Text(
-                        "${widget.horaPartido.hour}:${widget.horaPartido.minute}",
+                        widget.horaPartido.minute < 10
+                            ? "${widget.horaPartido.hour}:0${widget.horaPartido.minute}"
+                            : "${widget.horaPartido.hour}:${widget.horaPartido.minute}",
                         style: const TextStyle(
                           fontWeight: FontWeight.normal,
                           fontSize: 18,

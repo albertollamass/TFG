@@ -24,27 +24,27 @@ class _InfoPartidoState extends State<InfoPartido> {
         DefaultTabController(
             length: 1,
             child: Scaffold(
-              floatingActionButton: SizedBox(                
-                width: 70,
-                height: 70,
-                child: FittedBox(
-                  child: FloatingActionButton(
-                    backgroundColor: const Color(0xaa2B4EA1),
-                    onPressed: (() {
-                      Navigator.pop(context);
-                    }),
-                    child: const Icon(
-                      Icons.home,
-                      size: 40,
-                    ),
-                  ),
-                ),
-              ),
-              floatingActionButtonLocation:
-                  FloatingActionButtonLocation.centerDocked,              
+              // floatingActionButton: SizedBox(                
+              //   width: 70,
+              //   height: 70,
+              //   child: FittedBox(
+              //     child: FloatingActionButton(
+              //       backgroundColor: const Color(0xaa2B4EA1),
+              //       onPressed: (() {
+              //         Navigator.pop(context);
+              //       }),
+              //       child: const Icon(
+              //         Icons.home,
+              //         size: 40,
+              //       ),
+              //     ),
+              //   ),
+              // ),
+              // floatingActionButtonLocation:
+              //     FloatingActionButtonLocation.centerDocked,              
               appBar: AppBar(
-                toolbarHeight: 180,
-                automaticallyImplyLeading: false,
+                automaticallyImplyLeading: true,
+                
                 centerTitle: true,
                 bottom: const TabBar(
                     isScrollable: false,
@@ -62,44 +62,20 @@ class _InfoPartidoState extends State<InfoPartido> {
                       //   style: tabBarStyle,
                       // )),
                     ]),
-                title: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Container(
-                          margin: const EdgeInsets.fromLTRB(10, 10, 20, 10),
-                          padding: const EdgeInsets.all(40),
-                          decoration: BoxDecoration(
-                              color: Colors.black,
-                              borderRadius: BorderRadius.circular(100),
-                              border:
-                                  Border.all(width: 2, color: Colors.white))),
-                      widget.resultado["negro"] !>= 0 ? Text(
-                        widget.resultado["negro"].toString(),
-                        style: const TextStyle(fontSize: 45),
-                      ):const Text(""),
-                      const Text(" - ", style: TextStyle(fontSize: 45)),
-                      widget.resultado["blanco"] !>= 0 ? Text(widget.resultado["blanco"].toString(),
-                          style: const TextStyle(fontSize: 45)): const Text(""),
-                      Container(
-                          margin: const EdgeInsets.fromLTRB(20, 10, 10, 10),
-                          padding: const EdgeInsets.all(40),
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(100),
-                              border:
-                                  Border.all(width: 1, color: Colors.black))),
-                    ]),
+                title: 
+                    const Text("EDITAR RESULTADO",
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25)),              
               ),
-              bottomNavigationBar: BottomAppBar(
-                color: const Color(0xff2B4EA1),
-                notchMargin: 5.0,
-                shape: const CircularNotchedRectangle(),
-                child: Container(height: 30),                
-              ),
+              // bottomNavigationBar: BottomAppBar(
+              //   color: const Color(0xff2B4EA1),
+              //   notchMargin: 5.0,
+              //   shape: const CircularNotchedRectangle(),
+              //   child: Container(height: 30),                
+              // ),
               backgroundColor: const Color(0xffd2d2d2),
               body: TabBarView(
                 children: [
-                  ResumenPartido(fecha: widget.fecha, esAdmin: widget.esAdmin),
+                  ResumenPartido(fecha: widget.fecha, esAdmin: widget.esAdmin, resultado: widget.resultado,),
                   //HighlightsPartido(resultado: widget.resultado,),
                 ],
               )

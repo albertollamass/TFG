@@ -6,6 +6,7 @@ class Socio {
   int? telefono;
   String? password;
   int? saldo;
+  late String? alias = "";
   late bool esAdmin = false;
 
   Socio(
@@ -15,6 +16,7 @@ class Socio {
     this.telefono,
     this.password,
     this.saldo,
+    this.alias
   );
 
   String getNombre() {

@@ -8,8 +8,7 @@ import '../model/socio.dart';
 
 class Notificaciones extends StatefulWidget {
   final bool esAdmin;
-  const Notificaciones({Key? key, required this.esAdmin})
-      : super(key: key);
+  const Notificaciones({Key? key, required this.esAdmin}) : super(key: key);
 
   @override
   State<Notificaciones> createState() => _NotificacionesState();
@@ -25,29 +24,33 @@ class _NotificacionesState extends State<Notificaciones> {
 
   void showMultiSelect() async {
     List<Socio> socios = [
-      Socio("Pablo", "Perez", "pabloperez@gmail.com", 611611611, "pablo0_", 50),
-      Socio("Juan", "Perez", "pabloperez@gmail.com", 611611611, "pablo0_", 10),
-      Socio("Luis", "Perez", "pabloperez@gmail.com", 611611611, "pablo0_", -30),
-      Socio(
-          "Miguel", "Perez", "pabloperez@gmail.com", 611611611, "pablo0_", -20),
+      Socio("Pablo", "Perez", "pabloperez@gmail.com", 611611611, "pablo0_", 50,
+          "Pablito"),
+      Socio("Juan", "Perez", "pabloperez@gmail.com", 611611611, "pablo0_", 10,
+          "Pablito"),
+      Socio("Luis", "Perez", "pabloperez@gmail.com", 611611611, "pablo0_", -30,
+          "Pablito"),
+      Socio("Miguel", "Perez", "pabloperez@gmail.com", 611611611, "pablo0_",
+          -20, "Pablito"),
     ];
     List<String> nombreSocios = [];
     for (int i = 0; i < socios.length; i++) {
       nombreSocios.add(socios[i].nombre);
     }
-  final List<String>? results = await showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return MultiSelect(items: nombreSocios);
-    },
-  );
+    final List<String>? results = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return MultiSelect(items: nombreSocios);
+      },
+    );
 
-  if (results != null) {
-    setState(() {
-      selectedItems = results;
-    });
+    if (results != null) {
+      setState(() {
+        selectedItems = results;
+      });
+    }
   }
-}
+
   // Notificacion n1 = Notificacion("Prueba de descripción", "Juan", DateTime.now());
   // Notificacion n2 = Notificacion("Prueba de descripción", "Pepe", DateTime.now());
   @override
@@ -140,6 +143,42 @@ class _NotificacionesState extends State<Notificaciones> {
           ),
           centerTitle: true,
           elevation: 0,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.delete_forever, size: 29),
+              onPressed: () {
+                AlertDialog alert = AlertDialog(
+                  title: const Text("Borrar notificaciones"),
+                  content:
+                      const Text("¿Estás seguro de que quieres borrar todas las notificaciones?"),
+                  actions: [
+                    TextButton(
+                      child: const Text(
+                        "Borrar notificaciones",
+                        style: TextStyle(color: Colors.black),
+                      ),
+                      onPressed: () => {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>  Notificaciones(esAdmin: widget.esAdmin,)),
+                        )
+                      },
+                    ),
+                    TextButton(
+                      child: const Text("Cancelar"),
+                      onPressed: () => {Navigator.pop(context)},
+                    )
+                  ],
+                );
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return alert;
+                    });
+              },
+            ),
+          ],
         ),
         backgroundColor: const Color(0xff2B4EA1),
         body: Center(
@@ -153,86 +192,91 @@ class _NotificacionesState extends State<Notificaciones> {
                 ),
                 child: ListView(
                   children: notificacionesW,
-                )
-            )
-        ),
+                ))),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton: widget.esAdmin ? SizedBox(          
-          width: 70,
-          height: 70,
-          child: FittedBox(
-            alignment: Alignment.center,
-            child: FloatingActionButton(
-              backgroundColor: const Color.fromARGB(255, 130, 167, 254),
-              onPressed: (() {
-                AlertDialog alert = AlertDialog(
-                    title: const Text("Enviar notificacion"),
-                    content: SizedBox(
-                      height: 400,
-                      child:                         
-                        Column(
-                          children: [
-                            ElevatedButton(
-                                onPressed: showMultiSelect,
-                                child: const Text("Selecciona socio")),
-                            const Divider(
-                              height: 30,
-                            ),
-                            // display selected items
-                            Wrap(
-                              children: selectedItems
-                                  .map((e) => Chip(
-                                        label: Text(e),
-                                      ))
-                                  .toList(),
-                            ),
-                            const Divider(
-                              height: 30,
-                            ),
-                            const Text("Escribe el asunto de la notificacion:"),
-                            TextFormField(maxLines: 1,),
-                            const Divider(
-                              height: 20,
-                            ),
-                            const Text("Escribe el mensaje de la notificacion:"),
-                            TextFormField(maxLines: 5,)
-                          ],
-                        ),                      
-                    ),
-                    actions: [
-                      TextButton(
-                        child: const Text(
-                          "Enviar notificacion",
-                          style: TextStyle(color: Colors.black),
+        floatingActionButton: widget.esAdmin
+            ? SizedBox(
+                width: 70,
+                height: 70,
+                child: FittedBox(
+                  alignment: Alignment.center,
+                  child: FloatingActionButton(
+                    backgroundColor: const Color.fromARGB(255, 130, 167, 254),
+                    onPressed: (() {
+                      AlertDialog alert = AlertDialog(
+                        title: const Text("Enviar notificacion"),
+                        content: SizedBox(
+                          height: 400,
+                          child: Column(
+                            children: [
+                              ElevatedButton(
+                                  onPressed: showMultiSelect,
+                                  child: const Text("Selecciona socio")),
+                              const Divider(
+                                height: 30,
+                              ),
+                              // display selected items
+                              Wrap(
+                                children: selectedItems
+                                    .map((e) => Chip(
+                                          label: Text(e),
+                                        ))
+                                    .toList(),
+                              ),
+                              const Divider(
+                                height: 30,
+                              ),
+                              const Text(
+                                  "Escribe el asunto de la notificacion:"),
+                              TextFormField(
+                                maxLines: 1,
+                              ),
+                              const Divider(
+                                height: 20,
+                              ),
+                              const Text(
+                                  "Escribe el mensaje de la notificacion:"),
+                              TextFormField(
+                                maxLines: 5,
+                              )
+                            ],
+                          ),
                         ),
-                        onPressed: () => {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>  const Notificaciones(esAdmin: true,)),
+                        actions: [
+                          TextButton(
+                            child: const Text(
+                              "Enviar notificacion",
+                              style: TextStyle(color: Colors.black),
+                            ),
+                            onPressed: () => {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const Notificaciones(
+                                          esAdmin: true,
+                                        )),
+                              )
+                            },
+                          ),
+                          TextButton(
+                            child: const Text("Cancelar"),
+                            onPressed: () => {Navigator.pop(context)},
                           )
-                        },
-                      ),
-                      TextButton(
-                        child: const Text("Cancelar"),
-                        onPressed: () => {Navigator.pop(context)},
-                      )
-                    ],
-                  );
-                  showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return alert;
-                      });
-              }),
-              child: const Icon(
-                Icons.add,
-                size: 40,
-              ),
-            ),
-          ),
-        ) : const SizedBox()
-        
-    );
+                        ],
+                      );
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return alert;
+                          });
+                    }),
+                    child: const Icon(
+                      Icons.add,
+                      size: 40,
+                    ),
+                  ),
+                ),
+              )
+            : const SizedBox());
   }
 }

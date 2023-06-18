@@ -40,6 +40,9 @@ dependencies:
   flutter_spinkit: ^5.2.0
 
   flutter_native_splash: ^2.2.10+1
+  firebase_core: ^2.13.1
+  firebase_database: ^10.2.2
+  drag_and_drop_lists: ^0.3.1
 
 dev_dependencies:
   flutter_test:
