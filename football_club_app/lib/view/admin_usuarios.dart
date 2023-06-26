@@ -1,5 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:football_club_app/view/perfil.dart';
+import 'package:football_club_app/controller/controlador.dart';
+import 'package:football_club_app/view/crear.dart';
+
 
 import '../model/socio.dart';
 import 'admin_crear_usuario.dart';
@@ -13,18 +16,12 @@ class AdminUsuarios extends StatefulWidget {
 }
 
 class _AdminUsuariosState extends State<AdminUsuarios> {
-  List<Socio> socios = [
-    Socio("Pablo", "Perez", "pabloperez@gmail.com", 611611611, "pablo0_", 50, "Pablito"),
-    Socio("Juan", "Perez", "pabloperez@gmail.com", 611611611, "pablo0_", 50, "Pablito"),
-    Socio("Luis", "Perez", "pabloperez@gmail.com", 611611611, "pablo0_", 50, "Pablito"),
-    Socio("Miguel", "Perez", "pabloperez@gmail.com", 611611611, "pablo0_", 50, "Pablito"),
-  ];
+
   @override
   Widget build(BuildContext context) {
-    List<Widget> sociosW = [];
 
-    for (int i = 0; i < socios.length; i++) {
-      sociosW.add(Row(
+    Widget buildSocio (Socio socio) {
+      return Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
@@ -45,64 +42,74 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
             height: 40,
             width: 190,
             child: Text(
-              "${socios[i].nombre} ${socios[i].apellidos}",
+              "${socio.nombre} ${socio.apellidos}",
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
           ),
           InkWell(
-            child:  const SizedBox(
+            child: const SizedBox(
               width: 40,
-              child: Icon(Icons.edit),              
+              child: Icon(Icons.edit),
             ),
             onTap: () {
               Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => DatosPersonales(socio: socios[i],)),
-                  );              
+                context,
+                MaterialPageRoute(
+                    builder: (context) => DatosPersonales(
+                          socio: socio,
+                        )),
+              );
             },
           ),
           InkWell(
-            child:  const SizedBox(
+            child: const SizedBox(
               width: 20,
-              child: Icon(Icons.delete),              
+              child: Icon(Icons.delete),
             ),
-            onTap: () {  
+            onTap: () {
               AlertDialog alert = AlertDialog(
-                  title: const Text("Cerrar sesión"),
-                  content:
-                      const Text("¿Estás seguro de que quieres eliminar a este socio?"),
-                  actions: [
-                    TextButton(
-                      child: const Text(
-                        "Eliminar socio",
-                        style: TextStyle(color: Color(0xffD01E1E)),
-                      ),
-                      onPressed: () => {
-                      socios.removeWhere( (item) => item == socios[i]), 
-                      Navigator.pop(context)                       
-                      },
+                title: const Text("Eliminar socio"),
+                content: const Text(
+                    "¿Estás seguro de que quieres eliminar a este socio?"),
+                actions: [
+                  TextButton(
+                    child: const Text(
+                      "Eliminar socio",
+                      style: TextStyle(color: Color(0xffD01E1E)),
                     ),
-                    TextButton(
-                      child: const Text("Cancel"),
-                      onPressed: () => {Navigator.pop(context)},
-                    )
-                  ],
-                );
-                showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return alert;
-                    });            
+                    onPressed: () {
+                      
+                      final docSocio = FirebaseFirestore.instance
+                                        .collection('socios').doc('${socio.email}');
+                      docSocio.delete();
+                      Navigator.pop(context);  
+                      const snackBar =  SnackBar(
+                        content: Text('Usuario eliminado correctamente'),
+                      );
+                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    
+                    },
+                  ),
+                  TextButton(
+                    child: const Text("Cancel"),
+                    onPressed: () => {Navigator.pop(context)},
+                  )
+                ],
+              );
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return alert;
+                  });
             },
-          ),          
+          ),
         ],
-      ));
+      );
     }
 
     return Scaffold(
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton: SizedBox(          
+        floatingActionButton: SizedBox(
           width: 70,
           height: 70,
           child: FittedBox(
@@ -111,9 +118,9 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
               backgroundColor: const Color.fromARGB(255, 130, 167, 254),
               onPressed: (() {
                 Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const CrearUsuario()),                    
-                  );
+                  context,
+                  MaterialPageRoute(builder: (context) => const CrearUsuario()),
+                );
               }),
               child: const Icon(
                 Icons.add,
@@ -131,18 +138,29 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
           elevation: 0,
         ),
         backgroundColor: const Color(0xff2B4EA1),
-        body: Center(
-            child: Container(
-          height: 780,
-          width: 370,
-          padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: const Color(0xffffffff),
-          ),
-          child: ListView(
-            children: sociosW,
-          ),
-        )));
+        body: StreamBuilder<List<Socio>>(
+          stream: leerSocios(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              final socios = snapshot.data!;
+              return Center(
+                  child: Container(
+                height: 780,
+                width: 370,
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: const Color(0xffffffff),
+                ),
+                child: ListView(
+                  children: socios.map(buildSocio).toList(),
+                ),
+              ));
+            } else {
+              print(snapshot.toString());
+              return Text("error");
+            }
+          },
+        ));
   }
 }

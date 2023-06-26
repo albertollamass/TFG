@@ -23,27 +23,39 @@ class ResumenPartido extends StatefulWidget {
 }
 
 class _ResumenPartidoState extends State<ResumenPartido> {
+  void crearResultado(var equipos, var goles) {
+    widget.resultado["negro"] = 0;
+    widget.resultado["blanco"] = 0;
+    for (int i = 0; i < goles.length; i++) {
+      for (int j = 0; j < equipos.length; j++) {
+
+        for (int k = 0; k < equipos.values.elementAt(j).length; k++) {
+          //print(goles.keys.elementAt(i) + " " + equipos.values.elementAt(j).elementAt(k));
+          //print (equipos.keys.elementAt(j) + " " + widget.resultado[equipos.keys.elementAt(j)].toString());
+          if (goles.keys.elementAt(i) == equipos.values.elementAt(j).elementAt(k)) {
+            widget.resultado[equipos.keys.elementAt(j)] = (widget.resultado[equipos.keys.elementAt(j)]! + goles.values.elementAt(i)) as int;
+            //print(widget.resultado[equipos.keys.elementAt(j)]);
+          }
+        }
+      }
+    }
+  }
+
   Map<String, List<String>> equipos = {
     "negro": ["Antonio", "Joaquin", "M.Pardo", "Sergio", "Francis", "Victor"],
-    "blanco": [
-      "Rafa",
-      "Jose",
-      "Juanjo",
-      "Nene",
-      "Sam",
-      "Joseles",
-    ]
+    "blanco": ["Rafa", "Jose", "Juanjo", "Nene", "Sam", "Joseles"]
   };
 
-  List goles = [
-    {
-      1: {"negro": "Joaquin"}
-    }
-  ];
+  Map<String, int> goles = {
+    "Joaquin": 1,
+  };
+
+  bool tieneGol = false;
 
   @override
   Widget build(BuildContext context) {
-    const List<String> list = <String>['-1', '1', '2', '3', '4'];    
+    crearResultado(equipos, goles);
+    const List<String> list = <String>['0', '1', '2', '3', '4'];
     String dropdownValue = list.first;
     List<Widget> equiposW = [];
     equiposW.add(Row(
@@ -53,17 +65,18 @@ class _ResumenPartidoState extends State<ResumenPartido> {
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
         ),
         const SizedBox(
-        width: 20,
-      ),
+          width: 20,
+        ),
         widget.esAdmin
-              ? InkWell(child: const Icon(Icons.edit), onTap: () async {
-                 Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>  EditarEquipos()),
-                        );
-              })
-              : const Text(""),
+            ? InkWell(
+                child: const Icon(Icons.edit),
+                onTap: () async {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => EditarEquipos()),
+                  );
+                })
+            : const Text(""),
       ],
     ));
     equiposW.add(
@@ -82,6 +95,19 @@ class _ResumenPartidoState extends State<ResumenPartido> {
         ),
       );
       for (int j = 0; j < equipos.values.elementAt(i).length; j++) {
+        int indexGol = -1;
+        for (int k = 0; k < goles.length && !tieneGol; k++) {
+          //print(goles.values.elementAt(k).toString() +
+             // equipos.values.elementAt(i).elementAt(j).toString());
+          // print(equipos.values.elementAt(i).elementAt(j).toString());
+          if (equipos.values.elementAt(i).elementAt(j).toString() ==
+              goles.keys.elementAt(k).toString()) {
+            tieneGol = true;
+            indexGol = k;
+            //print(indexGol);
+          }
+        }
+
         equiposW.add(Row(children: [
           i == 0
               ? const Icon(
@@ -93,35 +119,22 @@ class _ResumenPartidoState extends State<ResumenPartido> {
                   Icons.circle,
                   color: Colors.white,
                   size: 40,
-                ),          
+                ),
           const SizedBox(
             width: 20,
           ),
-          Container(
+          SizedBox(
             width: 170,
             child: Text(
               equipos.values.elementAt(i).elementAt(j).toString(),
               style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 20),
             ),
           ),
-
-          // goles[0][1][equipos.keys.elementAt(i).toString()].toString() ==
-          //         equipos.values.elementAt(i).elementAt(j).toString()
-          //     ? Row(children: [
-          //         Text(
-          //           7.toString(),
-          //           style: const TextStyle(fontSize: 20),
-          //         ),
-          //         const SizedBox(width: 5),
-          //         const Icon(
-          //           Icons.sports_soccer,
-          //           size: 30,
-          //         )
-          //       ])
-          //     : const Text("")
           widget.esAdmin
               ? DropdownButton<String>(
-                  value: dropdownValue,
+                  value: indexGol != -1
+                      ? goles.values.elementAt(indexGol).toString()
+                      : dropdownValue,
                   icon: const Icon(Icons.arrow_downward),
                   elevation: 16,
                   style: const TextStyle(color: Colors.deepPurple),
@@ -142,21 +155,30 @@ class _ResumenPartidoState extends State<ResumenPartido> {
                     );
                   }).toList(),
                 )
-              : const Text(""),
-
-          widget.esAdmin ? const SizedBox(width: 5) : const Text(""),
+              : indexGol != -1 ? Text(goles.values.elementAt(indexGol).toString(), style: const TextStyle(fontSize: 22),) : const Text(""),
+          const SizedBox(width: 5),
           widget.esAdmin
               ? const Icon(
                   Icons.sports_soccer,
                   size: 30,
                 )
-              : const Text("")
+              : indexGol != -1 ? const Icon(
+                  Icons.sports_soccer,
+                  size: 30,
+                ): const Text(""),
         ]));
         equiposW.add(
           const SizedBox(
             height: 10,
           ),
         );
+        if (indexGol > 0) {
+          indexGol = -1;
+        }
+
+        if (tieneGol) {
+          tieneGol = false;
+        }
       }
       equiposW.add(
         const SizedBox(

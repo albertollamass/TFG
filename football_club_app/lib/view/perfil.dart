@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:football_club_app/view/admin_pagos.dart';
 import 'package:football_club_app/view/admin_partidos.dart';
@@ -411,11 +412,9 @@ class _PerfilState extends State<Perfil> {
                         style: TextStyle(color: Color(0xffD01E1E)),
                       ),
                       onPressed: () => {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const LogRegister()),
-                        )
+                        
+                        FirebaseAuth.instance.signOut(),
+                        Navigator.pop(context),
                       },
                     ),
                     TextButton(

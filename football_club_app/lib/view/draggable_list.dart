@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 // import 'package:drag_and_drop_lists/drag_and_drop_list.dart';
 import 'package:drag_and_drop_lists/drag_and_drop_lists.dart';
 import 'package:flutter/services.dart';
+import 'package:football_club_app/view/info_partido.dart';
 
 class EditarEquipos extends StatefulWidget {
   @override
@@ -28,6 +29,42 @@ class _EditarEquipos extends State<EditarEquipos> {
       appBar: AppBar(
         title: const Text("EDITAR EQUIPOS", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),),
         centerTitle: true,
+        actions: [
+              IconButton(
+                icon: const Icon(Icons.save, size: 29),
+                onPressed: () {
+                  AlertDialog alert = AlertDialog(
+                  title: const Text("Guardar cambios"),
+                  content:
+                      const Text("¿Quieres guardar los cambios?"),
+                  actions: [
+                    TextButton(
+                      child: const Text(
+                        "Guardar",
+                        style: TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+                      ),
+                      onPressed: () => {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>  EditarEquipos()),
+                        )
+                      },
+                    ),
+                    TextButton(
+                      child: const Text("Cancelar"),
+                      onPressed: () => {Navigator.pop(context)},
+                    )
+                  ],
+                );
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return alert;
+                    });
+                },
+              ),
+            ],
       ),
       body: DragAndDropLists(
         // lastItemTargetHeight: 50,

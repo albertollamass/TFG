@@ -16,15 +16,11 @@ class _AdminPagosState extends State<AdminPagos> {
 
   void showMultiSelect() async {
     List<Socio> socios = [
-      Socio("Pablo", "Perez", "pabloperez@gmail.com", 611611611, "pablo0_", 50, "Pablito"),
-      Socio("Juan", "Perez", "pabloperez@gmail.com", 611611611, "pablo0_", 10, "Pablito"),
-      Socio("Luis", "Perez", "pabloperez@gmail.com", 611611611, "pablo0_", -30, "Pablito"),
-      Socio(
-          "Miguel", "Perez", "pabloperez@gmail.com", 611611611, "pablo0_", -20, "Pablito"),
+      Socio(nombre:"Pablo",apellidos:  "Perez",email:  "pabloperez@gmail.com",telefono:  611611611, password: "pablo0_",saldo: 50, alias: "Pablito", esAdmin: true)
     ];
     List<String> nombreSocios = [];
     for (int i = 0; i < socios.length; i++) {
-      nombreSocios.add(socios[i].nombre);
+      nombreSocios.add(socios[i].nombre.toString());
     }
   final List<String>? results = await showDialog(
     context: context,
@@ -45,15 +41,11 @@ class _AdminPagosState extends State<AdminPagos> {
     List<Widget> pagosW = [];
 
     List<Socio> socios = [
-      Socio("Pablo", "Perez", "pabloperez@gmail.com", 611611611, "pablo0_", 50, "Pablito"),
-      Socio("Juan", "Perez", "pabloperez@gmail.com", 611611611, "pablo0_", 10, "Pablito"),
-      Socio("Luis", "Perez", "pabloperez@gmail.com", 611611611, "pablo0_", -30, "Pablito"),
-      Socio(
-          "Miguel", "Perez", "pabloperez@gmail.com", 611611611, "pablo0_", -20, "Pablito"),
+      Socio(nombre:"Pablo",apellidos:  "Perez",email:  "pabloperez@gmail.com",telefono:  611611611, password: "pablo0_",saldo: 50, alias: "Pablito", esAdmin: true)
     ];
     List<String> nombreSocios = [];
     for (int i = 0; i < socios.length; i++) {
-      nombreSocios.add(socios[i].nombre);
+      nombreSocios.add(socios[i].nombre.toString());
       pagosW.add(Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [

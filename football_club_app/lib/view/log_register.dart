@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:football_club_app/view/prueba.dart';
 import 'package:football_club_app/view/register.dart';
 import 'log_in.dart';
 
@@ -37,7 +38,7 @@ class _LogRegisterState extends State<LogRegister> {
                 onPressed: (() => {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const LogIn()),
+                    MaterialPageRoute(builder: (context) => const Prueba()),
                   )
                 }),
                 style: styleSignIn, 

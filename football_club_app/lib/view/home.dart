@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:football_club_app/view/estadisticas.dart';
 import 'package:football_club_app/view/partidos.dart';
@@ -8,9 +9,8 @@ import 'package:football_club_app/view/saldo.dart';
 import '../model/socio.dart';
 
 class Home extends StatefulWidget {
-  final Socio socio;
 
-  const Home({Key? key, required this.socio}) : super(key: key);
+  const Home({Key? key}) : super(key: key);
 
   @override
   State<Home> createState() => _HomeState();
@@ -22,6 +22,17 @@ class _HomeState extends State<Home> {
   bool hide = false;
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser!;
+    Socio socio = Socio(
+      nombre: "Pablo",
+      apellidos: "Perez",
+      email: "pabloperez@gmail.com",
+      telefono: 611611611,
+      password: "pablo0_",
+      saldo: 50,
+      alias: "Pablito",
+      esAdmin: true);
+    print(user.email);
     const tabBarStyle = TextStyle(fontSize: 20);
     return Stack(
       children: [
@@ -38,7 +49,7 @@ class _HomeState extends State<Home> {
         DefaultTabController(
             length: 3,
             child: Scaffold(
-              body: currentPage(currentIndex, previousIndex, widget.socio), 
+              body: currentPage(currentIndex, previousIndex, socio), 
               appBar: !hide ? AppBar( 
                 centerTitle: true,               
                 bottom: const TabBar(
