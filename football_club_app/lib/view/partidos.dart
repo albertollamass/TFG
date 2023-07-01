@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:football_club_app/view/resumen.dart';
+import '../controller/controlador.dart';
 
 class Partidos extends StatefulWidget {
   const Partidos({super.key});

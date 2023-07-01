@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:football_club_app/view/draggable_list.dart';
-import 'package:football_club_app/view/resumen.dart';
+import '../controller/controlador.dart';
 
 class ResumenPartido extends StatefulWidget {
   DateTime fecha;

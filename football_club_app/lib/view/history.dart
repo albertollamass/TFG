@@ -1,4 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:football_club_app/controller/controlador.dart';
+import 'package:football_club_app/model/gestion_monedero.dart';
 
 class History extends StatefulWidget {
   const History({super.key});
@@ -8,76 +11,79 @@ class History extends StatefulWidget {
 }
 
 class _HistoryState extends State<History> {
-  Map<String, int> pagos = {
-    "enero": -20,
-    "ingreso": 40,
-    "diciembre": -10,
-  };
+  
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> pagosW = [];
-
-    for (int i = 0; i < pagos.length; i++) {
-      if (pagos.values.elementAt(i) > 0){
-        pagosW.add(
-          Row(
+   
+    Widget buildOperacion(GestionMonedero operacion){
+      if (operacion.cantidad > 0){
+        return
+          Column(
             children: [
-              Icon(Icons.payments, color: Colors.green[900], size: 40,),
-              const SizedBox(width: 20,),
-              SizedBox(width:110, child: Text(pagos.keys.elementAt(i).toUpperCase(), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),),
-              const SizedBox(width: 70,),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.center,                
+              Row(
                 children: [
-                  Text("+ ${pagos.values.elementAt(i).toString()} €", style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
-                  const SizedBox(height: 5,),
-                  Container(                    
-                    height: 30,
-                    width: 80,
-                    decoration: BoxDecoration(
-                      color: Color(0xff0AD905),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child:const Center(child:  Text("DEPÓSITO", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),)),
+                  Icon(Icons.payments, color: Colors.green[900], size: 40,),
+                  const SizedBox(width: 20,),
+                  const SizedBox(width:110, child: Text("INGRESO", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),),
+                  const SizedBox(width: 70,),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,                
+                    children: [
+                      Text("+ ${operacion.cantidad.toString()} €", style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
+                      const SizedBox(height: 5,),
+                      Container(                    
+                        height: 30,
+                        width: 80,
+                        decoration: BoxDecoration(
+                          color: const Color(0xff0AD905),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child:const Center(child:  Text("DEPÓSITO", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),)),
+                      )
+                    ],
                   )
                 ],
-              )
+              ),
+              const SizedBox(height: 20,)
             ],
-          )
-        );
+          );
       } else {
-        pagosW.add(
-          Row(
+        String mes = monthToString(operacion.fecha.month);
+        return
+          Column(
             children: [
-              Icon(Icons.payments, color: Colors.redAccent[700], size: 40,),
-              const SizedBox(width: 20,),
-              SizedBox(width:110, child: Text(pagos.keys.elementAt(i).toUpperCase(), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),),
-              const SizedBox(width: 70,),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.center,                
+              Row(
                 children: [
-                  Text("${pagos.values.elementAt(i).toString()} €", style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
-                  const SizedBox(height: 5,),
-                  Container(                    
-                    height: 30,
-                    width: 80,
-                    decoration: BoxDecoration(
-                      color: Color(0xffC10707),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child:const Center(child:  Text("PAGO", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),)),
+                  Icon(Icons.payments, color: Colors.redAccent[700], size: 40,),
+                  const SizedBox(width: 20,),
+                  SizedBox(width:110, child: Text(mes.toUpperCase(), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),),
+                  const SizedBox(width: 70,),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,                
+                    children: [
+                      Text("${operacion.cantidad.toString()} €", style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
+                      const SizedBox(height: 5,),
+                      Container(                    
+                        height: 30,
+                        width: 80,
+                        decoration: BoxDecoration(
+                          color: const Color(0xffC10707),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child:const Center(child:  Text("PAGO", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),)),
+                      )
+                    ],
                   )
                 ],
-              )
+              ),
+              const SizedBox(height: 20,)
             ],
-          )
-        );
+          );
       }
-      pagosW.add(const SizedBox(height: 20,));
     }
 
-
+    final usuarioActivo = FirebaseAuth.instance.currentUser?.email;
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -97,8 +103,19 @@ class _HistoryState extends State<History> {
             borderRadius: BorderRadius.circular(10),
             color: const Color(0xffffffff),
           ),
-          child: ListView(
-            children: pagosW,
+          child: StreamBuilder<List<GestionMonedero>>(
+            stream: leerPagosSocio(usuarioActivo.toString()),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                final operaciones = snapshot.data;
+                return ListView(
+                  children: operaciones!.map(buildOperacion).toList(),
+                );
+              } else {
+                print(snapshot.toString());
+                return const Center(child: CircularProgressIndicator(),);
+              }
+            },
           ),
         )
       )

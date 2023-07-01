@@ -77,7 +77,7 @@ class _LogRegisterState extends State<LogRegister> {
                 onPressed: (() => {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const Register()),
+                    MaterialPageRoute(builder: (context) => Register(privacidad: false,)),
                   )
                 }),
                 style: styleRegister, 

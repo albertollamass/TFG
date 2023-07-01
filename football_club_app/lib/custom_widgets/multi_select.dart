@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import '../model/socio.dart';
 
 class MultiSelect extends StatefulWidget {
-  final List<String> items;
+  final List<String>items; 
   const MultiSelect({
     Key? key,
-    required this.items,
+    required this.items,    
   }) : super(key: key);
 
   @override
@@ -17,7 +17,6 @@ class MultiSelect extends StatefulWidget {
 class _MultiSelectState extends State<MultiSelect> {
   // this variable holds the selected items
   final List<String> _selectedItems = [];
-
 // This function is triggered when a checkbox is checked or unchecked
   void _itemChange(String itemValue, bool isSelected) {
     setState(() {
@@ -36,13 +35,14 @@ class _MultiSelectState extends State<MultiSelect> {
 
 // this function is called when the Submit button is tapped
   void _submit() {
+    //print(_selectedItems.toString());
     Navigator.pop(context, _selectedItems);
   }
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Select Topics'),
+      title: const Text('Selecciona socios'),
       content: SingleChildScrollView(
         child: ListBody(
           children: widget.items
@@ -61,7 +61,10 @@ class _MultiSelectState extends State<MultiSelect> {
           child: const Text('Cancelar'),
         ),
         ElevatedButton(
-          onPressed: _submit,
+          onPressed: () {
+            //print(_selectedItems.toString());            
+            Navigator.pop(context, _selectedItems);
+          },
           child: const Text('Guardar'),
         ),
       ],

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:football_club_app/view/resumen.dart';
+import '../controller/controlador.dart';
 
 import '../model/notificacion.dart';
 
@@ -51,7 +51,7 @@ class _LecturaNotificacionState extends State<LecturaNotificacion> {
                     ),
                     Center(
                       child: Text(
-                        "${widget.notificacion.emisor}",
+                        "${widget.notificacion.asunto}",
                         style: const TextStyle(
                             fontSize: 26, fontWeight: FontWeight.bold),
                       ),

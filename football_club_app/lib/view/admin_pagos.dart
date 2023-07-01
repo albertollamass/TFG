@@ -1,5 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:football_club_app/controller/controlador.dart';
 import 'package:football_club_app/custom_widgets/multi_select.dart';
+import 'package:football_club_app/model/gestion_monedero.dart';
 
 import '../model/socio.dart';
 
@@ -11,106 +15,127 @@ class AdminPagos extends StatefulWidget {
 }
 
 class _AdminPagosState extends State<AdminPagos> {
-
-  List<String> selectedItems = [];
-
-  void showMultiSelect() async {
-    List<Socio> socios = [
-      Socio(nombre:"Pablo",apellidos:  "Perez",email:  "pabloperez@gmail.com",telefono:  611611611, password: "pablo0_",saldo: 50, alias: "Pablito", esAdmin: true)
-    ];
-    List<String> nombreSocios = [];
-    for (int i = 0; i < socios.length; i++) {
-      nombreSocios.add(socios[i].nombre.toString());
-    }
-  final List<String>? results = await showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return MultiSelect(items: nombreSocios);
-    },
-  );
-
-  if (results != null) {
-    setState(() {
-      selectedItems = results;
-    });
-  }
-}
-
+  List<String> selectedItems = [], emailSocios = [];
+  List<Socio> sociosOut = [];
   @override
   Widget build(BuildContext context) {
-    List<Widget> pagosW = [];
+    Future showMultiSelect() async {
+      final List<String>? results = await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return StreamBuilder<List<Socio>>(
+            stream: leerSocios(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                final socios = snapshot.data;
+                List<String> nombreSocios = [];
+                for (int i = 0; i < socios!.length; i++) {
+                  sociosOut.add(socios[i]);
+                  nombreSocios.add(socios[i].nombre.toString());
+                  // emailSocios.add(socios[i].email.toString());
+                }
 
-    List<Socio> socios = [
-      Socio(nombre:"Pablo",apellidos:  "Perez",email:  "pabloperez@gmail.com",telefono:  611611611, password: "pablo0_",saldo: 50, alias: "Pablito", esAdmin: true)
-    ];
-    List<String> nombreSocios = [];
-    for (int i = 0; i < socios.length; i++) {
-      nombreSocios.add(socios[i].nombre.toString());
-      pagosW.add(Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Container(
-            margin: const EdgeInsets.all(10),
-            padding: const EdgeInsets.all(5),
-            decoration: BoxDecoration(
-                color: Colors.black,
-                borderRadius: BorderRadius.circular(50),
-                border: Border.all(width: 2, color: Colors.white)),
-            child: const Icon(
-              Icons.person_rounded,
-              size: 30,
-              color: Colors.white,
-            ),
-          ),
-          Container(
-            alignment: Alignment.center,
-            height: 40,
-            width: 190,
-            child: Text(
-              "${socios[i].nombre} ${socios[i].apellidos}",
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-          ),
-          socios[i].saldo! > 0
-              ? Container(
-                  decoration: BoxDecoration(
-                    color: const Color(0xff0AD905),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  alignment: Alignment.center,
-                  height: 40,
-                  width: 60,
-                  child: Text(
-                    "${socios[i].saldo} €",
-                    style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white),
-                  ),
-                )
-              : Container(
-                  decoration: BoxDecoration(
-                    color: const Color(0xffC10707),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  alignment: Alignment.center,
-                  height: 40,
-                  width: 60,
-                  child: Text(
-                    "${socios[i].saldo} €",
-                    style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white),
-                  ),
-                )
-        ],
-      ));
+                // Map<List<String>, List<String>> items = {nombreSocios: emailSocios};
+
+                return MultiSelect(items: nombreSocios);
+              } else {
+                print("nodata");
+                return const Text("e");
+              }
+            },
+          );
+        },
+      );
+
+      if (results != null) {
+        setState(() {
+          selectedItems = results;
+        });
+      }
     }
 
+    Widget buildGestion(GestionMonedero operacion) {
+      return FutureBuilder<Socio?>(
+          future: leerSocio(operacion.email),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              final socio = snapshot.data;
+              if (socio == null) {
+                return const Center(
+                  child: Text("nono"),
+                );
+              } else {
+                return Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.all(10),
+                      padding: const EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                          color: Colors.black,
+                          borderRadius: BorderRadius.circular(50),
+                          border: Border.all(width: 2, color: Colors.white)),
+                      child: const Icon(
+                        Icons.person_rounded,
+                        size: 30,
+                        color: Colors.white,
+                      ),
+                    ),
+                    Container(
+                      alignment: Alignment.center,
+                      height: 40,
+                      width: 190,
+                      child: Text(
+                        "${socio.nombre} ${socio.apellidos}",
+                        style: const TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    operacion.cantidad > 0
+                        ? Container(
+                            decoration: BoxDecoration(
+                              color: const Color(0xff0AD905),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            alignment: Alignment.center,
+                            height: 40,
+                            width: 60,
+                            child: Text(
+                              "${operacion.cantidad} €",
+                              style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white),
+                            ),
+                          )
+                        : Container(
+                            decoration: BoxDecoration(
+                              color: const Color(0xffC10707),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            alignment: Alignment.center,
+                            height: 40,
+                            width: 60,
+                            child: Text(
+                              "${operacion.cantidad} €",
+                              style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white),
+                            ),
+                          )
+                  ],
+                );
+              }
+            } else {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+          });
+    }
 
-
-
+    final cantidadIngreso = TextEditingController();
     return Scaffold(
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         floatingActionButton: Row(
@@ -118,54 +143,86 @@ class _AdminPagosState extends State<AdminPagos> {
           children: [
             FloatingActionButton(
                 heroTag: "btnAdd",
-                backgroundColor: const Color(0xff0AD905),
+                backgroundColor: Colors.blueAccent,
                 onPressed: () {
                   AlertDialog alert = AlertDialog(
-                    title: const Text("Añadir ingreso"),
+                    title: const Text("Añadir operacion"),
                     content: Container(
                       height: 250,
-                      child: 
-                        Column(
-                          children: [
-                            ElevatedButton(
-                                onPressed: showMultiSelect,
-                                child: const Text("Selecciona socio")),
-                            const Divider(
-                              height: 30,
-                            ),
-                            // display selected items
-                            Wrap(
-                              children: selectedItems
-                                  .map((e) => Chip(
-                                        label: Text(e),
-                                      ))
-                                  .toList(),
-                            ),
-                            const Divider(
-                              height: 30,
-                            ),
-                            const Text("Escribe la cantidad a ingresar:"),
-                            TextFormField()
-                          ],
-                        ),                    
+                      child: Column(
+                        children: [
+                          ElevatedButton(
+                              onPressed: showMultiSelect,
+                              child: const Text("Selecciona socio")),
+                          const Divider(
+                            height: 30,
+                          ),
+                          // display selected items
+                          Wrap(
+                            children: selectedItems
+                                .map((e) => Chip(
+                                      label: Text(e),
+                                    ))
+                                .toList(),
+                          ),
+                          const Divider(
+                            height: 30,
+                          ),
+                          const Text("Escribe la cantidad a ingresar:"),
+                          TextFormField(
+                            inputFormatters: <TextInputFormatter>[
+                              FilteringTextInputFormatter.digitsOnly
+                            ],
+                            keyboardType: TextInputType.number,
+                            controller: cantidadIngreso,
+                          )
+                        ],
+                      ),
                     ),
                     actions: [
                       TextButton(
                         child: const Text(
-                          "Añadir ingreso",
-                          style: TextStyle(color: Color(0xff0AD905)),
+                          "Añadir operacion",
+                          style: TextStyle(color: Colors.blueAccent),
                         ),
-                        onPressed: () => {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const AdminPagos()),
-                          )
+                        onPressed: () {
+                          //print(emailSocios.toString());
+                          for (int i = 0; i < sociosOut.length; i++) {
+                            for (int j = 0; j < selectedItems.length; j++) {
+                              if (sociosOut[i].nombre == selectedItems[j]) {
+                                emailSocios.add(sociosOut[i].email.toString());
+                                final docSocio = FirebaseFirestore.instance
+                                    .collection('socios')
+                                    .doc(sociosOut[i].email);
+                                docSocio.update({
+                                  'saldo': sociosOut[i].saldo! +
+                                      int.parse(cantidadIngreso.text.trim())
+                                });
+                                //print(sociosOut[i].email.toString() + "onpress");
+                              }
+                            }
+                          }
+                          sociosOut.clear();
+                          emailSocios.clear();
+                          selectedItems.clear();
+                          addOperacion(int.parse(cantidadIngreso.text.trim()),
+                              emailSocios);
+                          setState(() {
+                            selectedItems = [];
+                            emailSocios = [];
+                            cantidadIngreso.clear();
+                          });
+                          Navigator.pop(context);
                         },
                       ),
                       TextButton(
                         child: const Text("Cancelar"),
-                        onPressed: () => {Navigator.pop(context)},
+                        onPressed: () => {
+                          cantidadIngreso.clear(),
+                          Navigator.pop(context),
+                          selectedItems = [],
+                          emailSocios = []
+                        },
                       )
                     ],
                   );
@@ -179,70 +236,6 @@ class _AdminPagosState extends State<AdminPagos> {
                   Icons.payment,
                   size: 35,
                 )),
-            FloatingActionButton(
-                heroTag: "btnDelete",
-                backgroundColor: const Color(0xffC10707),
-                onPressed: () {
-                  AlertDialog alert = AlertDialog(
-                    title: const Text("Añadir pago"),
-                    content: Container(
-                      height: 250,
-                      child:                         
-                        Column(
-                          children: [
-                            ElevatedButton(
-                                onPressed: showMultiSelect,
-                                child: const Text("Selecciona socio")),
-                            const Divider(
-                              height: 30,
-                            ),
-                            // display selected items
-                            Wrap(
-                              children: selectedItems
-                                  .map((e) => Chip(
-                                        label: Text(e),
-                                      ))
-                                  .toList(),
-                            ),
-                            const Divider(
-                              height: 30,
-                            ),
-                            const Text("Escribe la cantidad a pagar:"),
-                            TextFormField()
-                          ],
-                        ),                      
-                    ),
-                    actions: [
-                      TextButton(
-                        child: const Text(
-                          "Añadir pago",
-                          style: TextStyle(color: Color(0xffC10707)),
-                        ),
-                        onPressed: () => {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const AdminPagos()),
-                          )
-                        },
-                      ),
-                      TextButton(
-                        child: const Text("Cancelar"),
-                        onPressed: () => {Navigator.pop(context)},
-                      )
-                    ],
-                  );
-                  showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return alert;
-                      });
-
-                },
-                child: const Icon(
-                  Icons.delete,
-                  size: 35,
-                ))
           ],
         ),
         bottomNavigationBar: BottomAppBar(
@@ -269,9 +262,21 @@ class _AdminPagosState extends State<AdminPagos> {
             borderRadius: BorderRadius.circular(10),
             color: const Color(0xffffffff),
           ),
-          child: ListView(
-            children: pagosW,
-          ),
+          child: StreamBuilder<List<GestionMonedero>>(
+              stream: leerTodosPagos(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  final historialSocios = snapshot.data!;
+                  return ListView(
+                    children: historialSocios.map(buildGestion).toList(),
+                  );
+                } else {
+                  print(snapshot.toString());
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+              }),
         )));
   }
 }

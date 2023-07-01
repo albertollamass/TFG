@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:football_club_app/view/home.dart';
 import 'package:football_club_app/view/log_in.dart';
+import 'package:football_club_app/view/log_register.dart';
 
 class Prueba extends StatelessWidget {
   const Prueba({super.key});

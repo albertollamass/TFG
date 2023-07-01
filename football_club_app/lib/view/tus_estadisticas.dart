@@ -1,6 +1,12 @@
 import 'dart:math';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:football_club_app/controller/controlador.dart';
+import 'package:football_club_app/model/carta.dart';
+import 'package:football_club_app/view/home.dart';
+import 'package:football_club_app/view/perfil.dart';
 
 class Rating {
   final String name;
@@ -8,15 +14,6 @@ class Rating {
 
   const Rating(this.name, this.value);
 }
-
-const jugador = [
-  Rating("RITMO", 87),
-  Rating("TIRO", 78),
-  Rating("PASE", 94),
-  Rating("REGATE", 82),
-  Rating("DEFENSA", 56),
-  Rating("FISICO", 80),
-];
 
 class TusEstadisticas extends StatefulWidget {
   const TusEstadisticas({super.key});
@@ -29,82 +26,8 @@ class _TusEstadisticasState extends State<TusEstadisticas> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final ButtonStyle styleInic = ElevatedButton.styleFrom(
-        textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        backgroundColor: const Color(0xff3C3577),
-        padding: const EdgeInsets.fromLTRB(30.0, 16.0, 30.0, 16.0));
 
-    List<Widget> ratingRow = [];
-
-    for (int i = 0; i < 6; i += 2) {
-      ratingRow.add(Row(children: [
-        SizedBox(
-            width: 80,
-            child: Text(
-              jugador[i].name,
-              style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xff5C5858),
-                  fontSize: 16),
-            )),
-        const SizedBox(
-          width: 20,
-        ),
-        SizedBox(
-          width: 20,
-          child: TextFormField(
-            initialValue: jugador[i].value.toString(),
-            maxLength: 2,
-          ),
-        ),
-        const SizedBox(
-          width: 40,
-        ),
-        SizedBox(
-            width: 80,
-            child: Text(
-              jugador[i + 1].name,
-              style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xff5C5858),
-                  fontSize: 16),
-            )),
-        const SizedBox(
-          width: 20,
-        ),
-        SizedBox(
-          width: 20,
-          child: TextFormField(
-            initialValue: jugador[i + 1].value.toString(),
-            maxLength: 2,
-          ),
-        )
-      ]));
-    }
-    ratingRow.add(
-      const SizedBox(
-        height: 20,
-      ),
-    );
-    ratingRow.add(
-      ElevatedButton(
-        onPressed: (() async => {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const TusEstadisticas()),
-              )
-            }),
-        style: styleInic,
-        child: const Center(child: Text("Guardar cambios")),
-      ),
-    );
-    ratingRow.add(
-      const SizedBox(
-        height: 20,
-      ),
-    );
-
+    final usuarioActivo = FirebaseAuth.instance.currentUser?.email;
     return Scaffold(
         appBar: AppBar(
           title: const Text(
@@ -112,7 +35,7 @@ class _TusEstadisticasState extends State<TusEstadisticas> {
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
           ),
           centerTitle: true,
-          elevation: 0,
+          elevation: 0,          
         ),
         backgroundColor: const Color(0xff2B4EA1),
         body: Center(
@@ -126,44 +49,180 @@ class _TusEstadisticasState extends State<TusEstadisticas> {
                 ),
                 child: ListView(
                   children: [
-                    Column(
-                      //alignment: Alignment.bottomCenter,
-                      children: [
-                        Container(
-                          // color: Colors.amber,
-                          padding: const EdgeInsets.fromLTRB(40, 30, 40, 0),
-                          alignment: Alignment.centerRight,
-                          height: 400,
-                          width: screenWidth,
-                          child: Hexagon(screenWidth: screenWidth / 1.25),
-                        ),
-                        // Container(
-                        //   height: 100,
-                        //   decoration: BoxDecoration(
-                        //       color: Color(0xff2B4EA1),
-                              
-                        //   ),
-                        // ),
-                        Container(
-                          // color: Colors.amber,
-                          padding: const EdgeInsets.fromLTRB(50, 30, 40, 0),
-                          alignment: Alignment.centerRight,
-                          height: 500,
-                          width: screenWidth,
-                          child: Column(
-                            children: ratingRow,
-                          ),
-                        )
-                      ],
-                    )
+                    FutureBuilder<Carta?>(
+                        future: leerCartaSocio(usuarioActivo.toString()),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            final jugador = snapshot.data;
+                            if (jugador == null) {
+                              return const Center(
+                                child: Text("nono"),
+                              );
+                            } else {
+                              return Column(
+                                //alignment: Alignment.bottomCenter,
+                                children: [
+                                  Container(
+                                    // color: Colors.amber,
+                                    padding: const EdgeInsets.fromLTRB(
+                                        40, 30, 40, 0),
+                                    alignment: Alignment.centerRight,
+                                    height: 400,
+                                    width: screenWidth,
+                                    child: Hexagon(
+                                      screenWidth: screenWidth / 1.25,
+                                      jugador: jugador,
+                                    ),
+                                  ),
+                                  Container(
+                                    // color: Colors.amber,
+                                    padding: const EdgeInsets.fromLTRB(
+                                        50, 30, 40, 0),
+                                    alignment: Alignment.centerRight,
+                                    height: 500,
+                                    width: screenWidth,
+                                    child: Column(
+                                      children: buildStats(jugador, context,
+                                          usuarioActivo.toString()),
+                                    ),
+                                  )
+                                ],
+                              );
+                            }
+                          } else {
+                            print(snapshot.error.toString());
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                        }),
                   ],
                 ))));
   }
 }
 
+List<Widget> buildStats(
+    Carta carta, BuildContext context, String usuarioActivo) {
+  List<Widget> ratingRow = [];
+
+  final jugador = [
+    Rating("RITMO", carta.ritmo),
+    Rating("TIRO", carta.tiro),
+    Rating("PASE", carta.pase),
+    Rating("REGATE", carta.regate),
+    Rating("DEFENSA", carta.defensa),
+    Rating("FISICO", carta.fisico),
+  ];
+
+  List<TextEditingController> controladores = [
+    TextEditingController(text: carta.ritmo.toString()),
+    TextEditingController(text: carta.tiro.toString()),
+    TextEditingController(text: carta.pase.toString()),
+    TextEditingController(text: carta.regate.toString()),
+    TextEditingController(text: carta.defensa.toString()),
+    TextEditingController(text: carta.fisico.toString()),
+  ];
+
+  final ButtonStyle styleInic = ElevatedButton.styleFrom(
+      textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+      backgroundColor: const Color(0xff3C3577),
+      padding: const EdgeInsets.fromLTRB(30.0, 16.0, 30.0, 16.0));
+  for (int i = 0; i < 6; i += 2) {
+    ratingRow.add(Row(children: [
+      SizedBox(
+          width: 80,
+          child: Text(
+            jugador[i].name,
+            style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Color(0xff5C5858),
+                fontSize: 16),
+          )),
+      const SizedBox(
+        width: 20,
+      ),
+      SizedBox(
+        width: 20,
+        child: TextFormField(
+          controller: controladores[i],
+          maxLength: 2,
+        ),
+      ),
+      const SizedBox(
+        width: 40,
+      ),
+      SizedBox(
+          width: 80,
+          child: Text(
+            jugador[i + 1].name,
+            style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Color(0xff5C5858),
+                fontSize: 16),
+          )),
+      const SizedBox(
+        width: 20,
+      ),
+      SizedBox(
+        width: 20,
+        child: TextFormField(
+          controller: controladores[i + 1],
+          maxLength: 2,
+        ),
+      )
+    ]));
+  }
+  ratingRow.add(
+    const SizedBox(
+      height: 20,
+    ),
+  );
+  ratingRow.add(
+    ElevatedButton(
+      onPressed: () async {
+        final docSocio = FirebaseFirestore.instance
+            .collection('estadisticas')
+            .doc(usuarioActivo);
+        try {
+          for (int i = 0; i < controladores.length; i++) {
+            docSocio.update({
+              jugador[i].name.toLowerCase():
+                  int.parse(controladores[i].text.trim()),
+            });
+          }
+        } on FirebaseException catch (e) {
+          final snackBar = SnackBar(
+            content: Text(e.message.toString()),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        }
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const Home()),
+        );
+        const snackBar = SnackBar(
+          content: Text('Estadisticas personales actualizadas'),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      },
+      style: styleInic,
+      child: const Center(child: Text("Guardar cambios")),
+    ),
+  );
+  ratingRow.add(
+    const SizedBox(
+      height: 20,
+    ),
+  );
+
+  return ratingRow;
+}
+
 class Hexagon extends StatelessWidget {
-  const Hexagon({Key? key, required this.screenWidth}) : super(key: key);
+  const Hexagon({Key? key, required this.screenWidth, required this.jugador})
+      : super(key: key);
   final double screenWidth;
+  final Carta jugador;
 
   double get diameter => screenWidth / 1.25 - 85;
   double get radius => diameter / 2;
@@ -179,12 +238,12 @@ class Hexagon extends StatelessWidget {
         ),
         ClipPath(
           clipper: HexagonClipper(radius: radius, multipliers: [
-            jugador[0].value / 100,
-            jugador[1].value / 100,
-            jugador[2].value / 100,
-            jugador[3].value / 100,
-            jugador[4].value / 100,
-            jugador[5].value / 100,
+            jugador.ritmo / 100,
+            jugador.tiro / 100,
+            jugador.pase / 100,
+            jugador.regate / 100,
+            jugador.defensa / 100,
+            jugador.fisico / 100,
           ]),
           child: SizedBox(
             width: diameter,
@@ -249,7 +308,7 @@ class HexagonClipper extends CustomClipper<Path> {
 
 class Labels extends StatelessWidget {
   final double radius, diameter;
-  final List<Rating> rating;
+  final Carta rating;
 
   const Labels(
       {super.key,
@@ -279,12 +338,12 @@ class Labels extends StatelessWidget {
               child: Column(
                 children: [
                   Text(
-                    rating[0].name,
+                    "RITMO",
                     textAlign: textAlign,
                     style: style,
                   ),
                   Text(
-                    rating[0].value.toString(),
+                    rating.ritmo.toString(),
                     textAlign: textAlign,
                     style: style,
                   )
@@ -303,12 +362,12 @@ class Labels extends StatelessWidget {
               child: Column(
                 children: [
                   Text(
-                    rating[1].name,
+                    "TIRO",
                     textAlign: textAlign,
                     style: style,
                   ),
                   Text(
-                    rating[1].value.toString(),
+                    rating.tiro.toString(),
                     textAlign: textAlign,
                     style: style,
                   )
@@ -327,12 +386,12 @@ class Labels extends StatelessWidget {
               child: Column(
                 children: [
                   Text(
-                    rating[2].name,
+                    "PASE",
                     textAlign: textAlign,
                     style: style,
                   ),
                   Text(
-                    rating[2].value.toString(),
+                    rating.pase.toString(),
                     textAlign: textAlign,
                     style: style,
                   )
@@ -351,12 +410,12 @@ class Labels extends StatelessWidget {
               child: Column(
                 children: [
                   Text(
-                    rating[3].name,
+                    "REGATE",
                     textAlign: textAlign,
                     style: style,
                   ),
                   Text(
-                    rating[3].value.toString(),
+                    rating.regate.toString(),
                     textAlign: textAlign,
                     style: style,
                   )
@@ -375,12 +434,12 @@ class Labels extends StatelessWidget {
               child: Column(
                 children: [
                   Text(
-                    rating[4].name,
+                    "DEFENSA",
                     textAlign: textAlign,
                     style: style,
                   ),
                   Text(
-                    rating[4].value.toString(),
+                    rating.defensa.toString(),
                     textAlign: textAlign,
                     style: style,
                   )
@@ -399,12 +458,12 @@ class Labels extends StatelessWidget {
               child: Column(
                 children: [
                   Text(
-                    rating[5].name,
+                    "FISICO",
                     textAlign: textAlign,
                     style: style,
                   ),
                   Text(
-                    rating[5].value.toString(),
+                    rating.fisico.toString(),
                     textAlign: textAlign,
                     style: style,
                   )

@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:football_club_app/model/equipo.dart';
 import 'package:football_club_app/model/partido.dart';
 import 'package:football_club_app/view/info_partido.dart';
-import 'package:football_club_app/view/resumen.dart';
-import 'package:football_club_app/view/resumen_partido.dart';
+import 'package:football_club_app/controller/controlador.dart';
 
-import '../model/socio.dart';
 
 class AdminPartidos extends StatefulWidget {
   const AdminPartidos({super.key});

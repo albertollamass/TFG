@@ -95,6 +95,7 @@ class _CrearUsuarioState extends State<CrearUsuario> {
                 height: 10,
               ),
               TextFormField(
+                obscureText: true,
                 controller: passwdController,
                 decoration: const InputDecoration(
                     icon: Icon(Icons.password), hintText: 'Contraseña *'),
@@ -103,6 +104,7 @@ class _CrearUsuarioState extends State<CrearUsuario> {
                 height: 10,
               ),
               TextFormField(
+                obscureText: true,
                 controller: cpasswdController,
                 decoration: const InputDecoration(
                     icon: Icon(Icons.password),
