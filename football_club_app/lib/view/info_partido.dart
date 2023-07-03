@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:football_club_app/model/partido.dart';
 import 'package:football_club_app/view/highlights_partido.dart';
 import 'package:football_club_app/view/resumen_partido.dart';
 
 class InfoPartido extends StatefulWidget {
-  final DateTime fecha;
-  final Map<String, int> resultado;
+  Partido partido;
   final bool esAdmin;
 
-  const InfoPartido(
+  InfoPartido(
       {Key? key,
-      required this.fecha,
-      required this.resultado,
+      required this.partido,
       this.esAdmin = false})
       : super(key: key);
 
@@ -47,43 +46,7 @@ class _InfoPartidoState extends State<InfoPartido> {
                 // floatingActionButtonLocation:
                 //     FloatingActionButtonLocation.centerDocked,
                 appBar: AppBar(
-                  automaticallyImplyLeading: true,
-                  actions: [
-                    IconButton(
-                      icon: const Icon(Icons.save, size: 29),
-                      onPressed: () {
-                        AlertDialog alert = AlertDialog(
-                          title: const Text("Guardar cambios"),
-                          content: const Text("¿Quieres guardar los cambios?"),
-                          actions: [
-                            TextButton(
-                              child: const Text(
-                                "Guardar",
-                                style: TextStyle(
-                                    color: Color.fromARGB(255, 0, 0, 0)),
-                              ),
-                              onPressed: () => {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => InfoPartido(fecha: widget.fecha,resultado: widget.resultado,esAdmin: widget.esAdmin, )),
-                                )
-                              },
-                            ),
-                            TextButton(
-                              child: const Text("Cancelar"),
-                              onPressed: () => {Navigator.pop(context)},
-                            )
-                          ],
-                        );
-                        showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return alert;
-                            });
-                      },
-                    ),
-                  ],
+                  automaticallyImplyLeading: true,                  
                   centerTitle: true,
                   bottom: const TabBar(
                       isScrollable: false,
@@ -118,10 +81,9 @@ class _InfoPartidoState extends State<InfoPartido> {
                 backgroundColor: const Color(0xffd2d2d2),
                 body: TabBarView(
                   children: [
-                    ResumenPartido(
-                      fecha: widget.fecha,
+                    ResumenPartido(                      
                       esAdmin: widget.esAdmin,
-                      resultado: widget.resultado,
+                      partido: widget.partido,
                     ),
                     //HighlightsPartido(resultado: widget.resultado,),
                   ],

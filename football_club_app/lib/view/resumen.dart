@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:football_club_app/model/estadisticas.dart';
+import 'package:football_club_app/model/partido.dart';
+import 'package:football_club_app/model/socio.dart';
 import 'package:football_club_app/view/info_partido.dart';
+import '../controller/controlador.dart';
 
 class Resumen extends StatefulWidget {
   const Resumen({super.key});
@@ -9,152 +13,165 @@ class Resumen extends StatefulWidget {
 }
 
 class _ResumenState extends State<Resumen> {
-  final hoy = DateTime.now();
-  var resultado = {"negro": 1, "blanco": 0};
-  var jugadores = [
-    "Rafa",
-    "Jose",
-    "Juanjo",
-    "Nene",
-    "Sam",
-    "Joseles",
-    "Antonio",
-    "Joaquin",
-    "M.Pardo",
-    "Sergio",
-    "Francis",
-    "Victor"
-  ];
   @override
   Widget build(BuildContext context) {
     //Tabla clasificacion
-    List<Widget> mywidgets = [];
-    mywidgets.add(Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-      const SizedBox(
-        width: 35,
-        child: Text(
-          "Pos",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+    List<Widget> buildClasificacion(List<Estadisticas> jugadores) {
+      List<Widget> mywidgets = [];
+      jugadores.sort((a, b) {
+        int cmp = b.puntos.compareTo(a.puntos);
+        if (cmp != 0) return cmp;
+        return b.goles.compareTo(a.goles);
+      });
+
+      mywidgets.add(Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+        const SizedBox(
+          width: 35,
+          child: Text(
+            "Pos",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+          ),
         ),
-      ),
-      const SizedBox(
-        width: 10,
-      ),
-      const SizedBox(
-        width: 70,
-        child: Text(
-          "Jugador",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+        const SizedBox(
+          width: 10,
         ),
-      ),
-      Container(
-        width: 30,
-        alignment: Alignment.center,
-        child: const Text(
-          "PJ",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+        const SizedBox(
+          width: 70,
+          child: Text(
+            "Jugador",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+          ),
         ),
-      ),
-      Container(
-        width: 30,
-        alignment: Alignment.center,
-        child: const Text(
-          "PG",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+        Container(
+          width: 30,
+          alignment: Alignment.center,
+          child: const Text(
+            "PJ",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+          ),
         ),
-      ),
-      Container(
-        width: 30,
-        alignment: Alignment.center,
-        child: const Text(
-          "PP",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+        Container(
+          width: 30,
+          alignment: Alignment.center,
+          child: const Text(
+            "PG",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+          ),
         ),
-      ),
-      Container(
-        width: 30,
-        alignment: Alignment.center,
-        child: const Text(
-          "PE",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+        Container(
+          width: 30,
+          alignment: Alignment.center,
+          child: const Text(
+            "PP",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+          ),
         ),
-      ),
-      Container(
-        width: 30,
-        alignment: Alignment.center,
-        child: const Text(
-          "Pts",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+        Container(
+          width: 30,
+          alignment: Alignment.center,
+          child: const Text(
+            "PE",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+          ),
         ),
-      ),
-    ]));
-    mywidgets.add(const Divider(
-      thickness: 2,
-    ));
-    for (int x = 0; x < jugadores.length; x++) {
-      mywidgets.add(Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SizedBox(
-            width: 30,
-            child: Text(
-              (x + 1).toString(),
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w300),
-            ),
+        Container(
+          width: 30,
+          alignment: Alignment.center,
+          child: const Text(
+            "Pts",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
           ),
-          const SizedBox(
-            width: 10,
-          ),
-          SizedBox(
-            width: 70,
-            child: Text(
-              jugadores[x],
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w300),
-            ),
-          ),
-          Container(
-            width: 30,
-            alignment: Alignment.center,
-            child: Text(
-              4.toString(),
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w300),
-            ),
-          ),
-          Container(
-            width: 30,
-            alignment: Alignment.center,
-            child: Text(
-              4.toString(),
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w300),
-            ),
-          ),
-          Container(
-            width: 30,
-            alignment: Alignment.center,
-            child: Text(
-              4.toString(),
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w300),
-            ),
-          ),
-          Container(
-            width: 30,
-            alignment: Alignment.center,
-            child: Text(
-              4.toString(),
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w300),
-            ),
-          ),
-          Container(
-            width: 30,
-            alignment: Alignment.center,
-            child: const Text(
-              "100",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300),
-            ),
-          ),
-        ],
+        ),
+      ]));
+      mywidgets.add(const Divider(
+        thickness: 2,
       ));
-      mywidgets.add(const Divider());
+
+      for (int x = 0; x < jugadores.length; x++) {
+        mywidgets.add(FutureBuilder<Socio?>(
+          future: leerSocio(jugadores[x].email.toString()),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              final stats = snapshot.data!;
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: 30,
+                    child: Text(
+                      (x + 1).toString(),
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.w300),
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  SizedBox(
+                    width: 70,
+                    child: Text(
+                      stats.alias != ""
+                          ? stats.alias.toString()
+                          : (stats.nombre.toString()),
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.w300),
+                    ),
+                  ),
+                  Container(
+                    width: 30,
+                    alignment: Alignment.center,
+                    child: Text(
+                      jugadores[x].partidosJugados.toString(),
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.w300),
+                    ),
+                  ),
+                  Container(
+                    width: 30,
+                    alignment: Alignment.center,
+                    child: Text(
+                      jugadores[x].partidosGanados.toString(),
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.w300),
+                    ),
+                  ),
+                  Container(
+                    width: 30,
+                    alignment: Alignment.center,
+                    child: Text(
+                      jugadores[x].partidosPerdidos.toString(),
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.w300),
+                    ),
+                  ),
+                  Container(
+                    width: 30,
+                    alignment: Alignment.center,
+                    child: Text(
+                      jugadores[x].partidosPerdidos.toString(),
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.w300),
+                    ),
+                  ),
+                  Container(
+                    width: 30,
+                    alignment: Alignment.center,
+                    child: Text(
+                      jugadores[x].puntos.toString(),
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.w300),
+                    ),
+                  ),
+                ],
+              );
+            } else {
+              return const CircularProgressIndicator();
+            }
+          },
+        ));
+        mywidgets.add(const Divider());
+      }
+      return mywidgets;
     }
 
     //---------------------------------------------------------------------
@@ -162,75 +179,96 @@ class _ResumenState extends State<Resumen> {
       padding: const EdgeInsets.all(20),
       children: [
         //ULTIMO PARTIDO
-        InkWell(
-          onTap: () {
-            Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => InfoPartido(fecha: hoy, resultado: resultado,)),
-            );
-          },
-          child: Column(
-            children: [
-              Container(
-                width: 380,
-                alignment: Alignment.centerLeft,
-                padding: const EdgeInsets.all(10),
-                decoration: const BoxDecoration(
-                  color: Color(0xffC1C2C6),
-                  borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(10),
-                      topRight: Radius.circular(10)),
-                ),
-                child: Text(
-                  weekdayToString(hoy.weekday) +
-                      " " +
-                      hoy.day.toString() +
-                      " " +
-                      monthToString(hoy.month),
-                  style: const TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 20),
-                ),
-              ),
-              Container(
-                width: 380,
-                alignment: Alignment.centerLeft,
-                padding: const EdgeInsets.all(10),
-                decoration: const BoxDecoration(
-                  color: Color(0xffE0DEE4),
-                  borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(10),
-                      bottomRight: Radius.circular(10)),
-                ),
-                child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        StreamBuilder<List<Partido>>(
+          stream: leerUltimoPartido(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              final partidos = snapshot.data!;
+              List<Widget> partidosW = [];
+              int i = partidos.length-1;
+                partidosW.add(InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => InfoPartido(
+                                partido: partidos[i],
+                              )),
+                    );
+                  },
+                  child: Column(
                     children: [
                       Container(
-                          margin: const EdgeInsets.fromLTRB(40, 10, 7, 10),
-                          padding: const EdgeInsets.all(30),
-                          decoration: BoxDecoration(
-                              color: Colors.black,
-                              borderRadius: BorderRadius.circular(100),
-                              border:
-                                  Border.all(width: 2, color: Colors.white))),
-                      Text(
-                        resultado["negro"].toString(),
-                        style: const TextStyle(fontSize: 35),
+                        width: 380,
+                        alignment: Alignment.centerLeft,
+                        padding: const EdgeInsets.all(10),
+                        decoration: const BoxDecoration(
+                          color: Color(0xffC1C2C6),
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(10),
+                              topRight: Radius.circular(10)),
+                        ),
+                        child: Text(
+                          weekdayToString(partidos[i].fechaPartido.weekday) +
+                              " " +
+                              partidos[i].fechaPartido.day.toString() +
+                              " " +
+                              monthToString(partidos[i].fechaPartido.month),
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 20),
+                        ),
                       ),
-                      const Text(" - ", style: TextStyle(fontSize: 35)),
-                      Text(resultado["blanco"].toString(),
-                          style: const TextStyle(fontSize: 35)),
                       Container(
-                          margin: const EdgeInsets.fromLTRB(7, 10, 40, 10),
-                          padding: const EdgeInsets.all(30),
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(100),
-                              border:
-                                  Border.all(width: 1, color: Colors.black))),
-                    ]),
-              ),
-            ],
-          ),
+                        width: 380,
+                        alignment: Alignment.centerLeft,
+                        padding: const EdgeInsets.all(10),
+                        decoration: const BoxDecoration(
+                          color: Color(0xffE0DEE4),
+                          borderRadius: BorderRadius.only(
+                              bottomLeft: Radius.circular(10),
+                              bottomRight: Radius.circular(10)),
+                        ),
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Container(
+                                  margin:
+                                      const EdgeInsets.fromLTRB(40, 10, 7, 10),
+                                  padding: const EdgeInsets.all(30),
+                                  decoration: BoxDecoration(
+                                      color: Colors.black,
+                                      borderRadius: BorderRadius.circular(100),
+                                      border: Border.all(
+                                          width: 2, color: Colors.white))),
+                              Text(
+                                partidos[i].golesNegro.toString(),
+                                style: const TextStyle(fontSize: 35),
+                              ),
+                              const Text(" - ", style: TextStyle(fontSize: 35)),
+                              Text(partidos[i].golesBlanco.toString(),
+                                  style: const TextStyle(fontSize: 35)),
+                              Container(
+                                  margin:
+                                      const EdgeInsets.fromLTRB(7, 10, 40, 10),
+                                  padding: const EdgeInsets.all(30),
+                                  decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(100),
+                                      border: Border.all(
+                                          width: 1, color: Colors.black))),
+                            ]),
+                      ),
+                    ],
+                  ),
+                ));
+              
+              return Column(
+                children: partidosW,
+              );
+            } else {
+              return const Text("no data");
+            }
+          },
         ),
 
         const SizedBox(
@@ -262,55 +300,20 @@ class _ResumenState extends State<Resumen> {
                   bottomLeft: Radius.circular(10),
                   bottomRight: Radius.circular(10)),
             ),
-            child: Column(children: mywidgets,))
+            child: StreamBuilder<List<Estadisticas>>(
+              stream: leerClasificacion(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  final socios = snapshot.data!;
+                  return Column(
+                    children: buildClasificacion(socios),
+                  );
+                } else {
+                  return Text("error");
+                }
+              },
+            ))
       ],
     );
-  }
-}
-
-weekdayToString(int? weekday) {
-  if (weekday == 1) {
-    return "Lunes";
-  } else if (weekday == 2) {
-    return "Martes";
-  } else if (weekday == 3) {
-    return "Miércoles";
-  } else if (weekday == 4) {
-    return "Jueves";
-  } else if (weekday == 5) {
-    return "Viernes";
-  } else if (weekday == 6) {
-    return "Sábado";
-  } else {
-    return "Domingo";
-  }
-}
-
-
-monthToString(int? month) {
-  if (month == 1) {
-    return "Enero";
-  } else if (month == 2) {
-    return "Febrero";
-  } else if (month == 3) {
-    return "Marzo";
-  } else if (month == 4) {
-    return "Abril";
-  } else if (month == 5) {
-    return "Mayo";
-  } else if (month == 6) {
-    return "Junio";
-  } else if (month == 7) {
-    return "Julio";
-  } else if (month == 8) {
-    return "Agosto";
-  } else if (month == 9) {
-    return "Septiembre";
-  } else if (month == 10) {
-    return "Octubre";
-  } else if (month == 11) {
-    return "Noviembre";
-  } else {
-    return "Diciembre";
   }
 }

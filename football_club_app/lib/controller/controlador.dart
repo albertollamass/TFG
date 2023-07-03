@@ -1,8 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:football_club_app/model/carta.dart';
+import 'package:football_club_app/model/equipo.dart';
+import 'package:football_club_app/model/estadisticas.dart';
 import 'package:football_club_app/model/gestion_monedero.dart';
 import 'package:football_club_app/model/notificacion.dart';
+import 'package:football_club_app/model/partido.dart';
 import 'package:football_club_app/model/socio.dart';
 
 Future crearCartaInicial(String email) async {
@@ -15,11 +18,27 @@ Future crearCartaInicial(String email) async {
   await docSocio.set(json);
 }
 
+Future crearClasificacion(String email) async {
+  final docSocio =
+      FirebaseFirestore.instance.collection('clasificacion').doc(email);
+  final stats = Estadisticas(
+      email: email,
+      goles: 0,
+      partidosEmpatados: 0,
+      partidosGanados: 0,
+      partidosJugados: 0,
+      partidosPerdidos: 0,
+      puntos: 0);
+
+  final json = stats.toMap();
+  await docSocio.set(json);
+}
+
 Future crearSocio(String name, String surname, String? alias, String email,
     String passwd, String? phone, bool? esAdmin, String? oldEmail) async {
   final docSocio = FirebaseFirestore.instance.collection('socios').doc(email);
   // print("pasa esto");
-  var intPhone = phone != "" ? int.parse(phone.toString()): 0;
+  var intPhone = phone != "" ? int.parse(phone.toString()) : 0;
   final socio = Socio(
       nombre: name,
       apellidos: surname,
@@ -52,6 +71,7 @@ Future crearSocio(String name, String surname, String? alias, String email,
   }
 
   crearCartaInicial(email);
+  crearClasificacion(email);
 }
 
 Stream<List<Socio>> leerSocios() {
@@ -70,13 +90,12 @@ Future<Socio?> leerSocio(String email) async {
 }
 
 Stream<List<GestionMonedero>> leerPagosSocio(String email) {
-  final historial =
-    FirebaseFirestore.instance.collection('historial').where("email", isEqualTo: email);
-  
-  return historial.snapshots().map(
-      (snapshot) => snapshot.docs
-          .map((doc) => GestionMonedero.fromMap(doc.data()))
-          .toList());
+  final historial = FirebaseFirestore.instance
+      .collection('historial')
+      .where("email", isEqualTo: email);
+
+  return historial.snapshots().map((snapshot) =>
+      snapshot.docs.map((doc) => GestionMonedero.fromMap(doc.data())).toList());
 }
 
 Stream<List<GestionMonedero>> leerTodosPagos() {
@@ -87,20 +106,21 @@ Stream<List<GestionMonedero>> leerTodosPagos() {
 }
 
 Stream<List<Notificacion>> leerNotificaciones() {
-  return FirebaseFirestore.instance.collection('notificaciones').snapshots().map(
-      (snapshot) => snapshot.docs
+  return FirebaseFirestore.instance
+      .collection('notificaciones')
+      .snapshots()
+      .map((snapshot) => snapshot.docs
           .map((doc) => Notificacion.fromMap(doc.data()))
           .toList());
 }
 
 Stream<List<Notificacion>> leerNotificacionesSocio(String email) {
-  final notis =
-    FirebaseFirestore.instance.collection('notificaciones').where("receptor", isEqualTo: email);
-  
-  return notis.snapshots().map(
-      (snapshot) => snapshot.docs
-          .map((doc) => Notificacion.fromMap(doc.data()))
-          .toList());
+  final notis = FirebaseFirestore.instance
+      .collection('notificaciones')
+      .where("receptor", isEqualTo: email);
+
+  return notis.snapshots().map((snapshot) =>
+      snapshot.docs.map((doc) => Notificacion.fromMap(doc.data())).toList());
 }
 
 Future<Carta?> leerCartaSocio(String email) async {
@@ -113,19 +133,24 @@ Future<Carta?> leerCartaSocio(String email) async {
   }
 }
 
-Future addOperacion(int cantidad, List<String> emails) async {
-    
-    print(emails.length);
-    for (int i = 0; i < emails.length; i++){
-      final docSocio =
-        FirebaseFirestore.instance.collection('historial').doc();
-      final operation =
-        GestionMonedero(cantidad: cantidad, email: emails[i], fecha: DateTime.now());
+Stream<List<Partido>> leerUltimoPartido() {
+  final docSocio = FirebaseFirestore.instance.collection('partidos').snapshots();
 
-      final json = operation.toMap();
-      await docSocio.set(json);
-    }
+   return docSocio.map((snapshot) =>
+      snapshot.docs.map((doc) => Partido.fromMap(doc.data())).toList());
     
+}
+
+Future addOperacion(int cantidad, List<String> emails) async {
+  print(emails.length);
+  for (int i = 0; i < emails.length; i++) {
+    final docSocio = FirebaseFirestore.instance.collection('historial').doc();
+    final operation = GestionMonedero(
+        cantidad: cantidad, email: emails[i], fecha: DateTime.now());
+
+    final json = operation.toMap();
+    await docSocio.set(json);
+  }
 }
 
 bool comprobarPass(String oldPass, String newPass) {
@@ -153,7 +178,6 @@ weekdayToString(int? weekday) {
     return "Domingo";
   }
 }
-
 
 monthToString(int? month) {
   if (month == 1) {
@@ -185,9 +209,10 @@ monthToString(int? month) {
 
 Future crearSolicitud(String name, String surname, String? alias, String email,
     String passwd, String? phone, bool? esAdmin) async {
-  final docSocio = FirebaseFirestore.instance.collection('solicitudes').doc(email);
+  final docSocio =
+      FirebaseFirestore.instance.collection('solicitudes').doc(email);
   // print("pasa esto");
-  var intPhone = phone != "" ? int.parse(phone.toString()):0;
+  var intPhone = phone != "" ? int.parse(phone.toString()) : 0;
   final socio = Socio(
       nombre: name,
       apellidos: surname,
@@ -201,7 +226,6 @@ Future crearSolicitud(String name, String surname, String? alias, String email,
   final json = socio.toJson();
 
   await docSocio.set(json);
-
 }
 
 Stream<List<Socio>> leerSolicitudes() {
@@ -210,16 +234,101 @@ Stream<List<Socio>> leerSolicitudes() {
           snapshot.docs.map((doc) => Socio.fromJson(doc.data())).toList());
 }
 
-Future enviarNotificacion(String asunto, String descripcion, List<String> emails) async {
+Future enviarNotificacion(
+    String asunto, String descripcion, List<String> emails) async {
   print(emails.length);
-    for (int i = 0; i < emails.length; i++){
-      var idNow = DateTime.now();
-      final docNoti =
-        FirebaseFirestore.instance.collection('notificaciones').doc(((idNow.microsecondsSinceEpoch/1000).truncate()).toString());
-      final notificacion =
-       Notificacion(asunto, descripcion, emails[i], idNow, false);
+  for (int i = 0; i < emails.length; i++) {
+    var idNow = DateTime.now();
+    final docNoti = FirebaseFirestore.instance
+        .collection('notificaciones')
+        .doc(((idNow.microsecondsSinceEpoch / 1000).truncate()).toString());
+    final notificacion =
+        Notificacion(asunto, descripcion, emails[i], idNow, false);
 
-      final json = notificacion.toMap();
-      await docNoti.set(json);
-    }
+    final json = notificacion.toMap();
+    await docNoti.set(json);
+  }
+}
+
+Stream<List<Partido>> leerPartidos() {
+  return FirebaseFirestore.instance.collection('partidos').snapshots().map(
+      (snapshot) =>
+          snapshot.docs.map((doc) => Partido.fromMap(doc.data())).toList());
+}
+
+Future crearEquipo(List<String> jugadores) async {
+  Equipo equipo1 =
+      Equipo(color: "negro", fechaEquipo: DateTime(2023, 3, 13), jugadores: [
+    "Antonio@gmail.com",
+    "Joaquin@gmail.com",
+    "M.Pardo@gmail.com",
+    "Sergio@gmail.com",
+    "Francis@gmail.com",
+    "Victor@gmail.com"
+  ]);
+  Equipo equipo2 =
+      Equipo(color: "blanco", fechaEquipo: DateTime(2023, 3, 13), jugadores: [
+    "rafa@gmail.com",
+    "jose@gmail.com",
+    "Juanjo@gmail.com",
+    "Nene@gmail.com",
+    "Sam@gmail.com",
+    "Joseles@gmail.com",
+  ]);
+  final docSocio = FirebaseFirestore.instance
+      .collection('equipos')
+      .doc("${equipo1.color}_${equipo1.fechaEquipo}");
+  final docSocio2 = FirebaseFirestore.instance
+      .collection('equipos')
+      .doc("${equipo2.color}_${equipo2.fechaEquipo}");
+
+  final json2 = equipo2.toMap();
+  final json = equipo1.toMap();
+
+  await docSocio2.set(json2);
+  await docSocio.set(json);
+}
+
+Future crearPartido(DateTime fecha, Equipo negro, Equipo blanco) async {
+  final docSocio = FirebaseFirestore.instance
+      .collection('partidos')
+      .doc(fecha.millisecondsSinceEpoch.toString());
+
+  Partido partido = Partido(fechaPartido: fecha, golesBlanco: 0, golesNegro: 0);
+
+  final json = partido.toMap();
+
+  await docSocio.set(json);
+}
+
+Stream<List<Equipo>> leerEquiposPartido(DateTime fecha) {
+  return FirebaseFirestore.instance
+      .collection('equipos')
+      .where("fechaEquipo", isEqualTo: fecha.millisecondsSinceEpoch)
+      .snapshots()
+      .map((snapshot) =>
+          snapshot.docs.map((doc) => Equipo.fromMap(doc.data())).toList());
+}
+
+Future actualizarGolesJugador(String email, String goles) async {
+  final docSocio =
+      FirebaseFirestore.instance.collection('clasificacion').doc(email);
+
+  docSocio.update({'goles': int.parse(goles)});
+}
+
+Future<Estadisticas?> getEstadisticasSocio(String email) async {
+  final docSocio =
+      FirebaseFirestore.instance.collection('clasificacion').doc(email);
+  final snapshot = await docSocio.get();
+
+  if (snapshot.exists) {
+    return Estadisticas.fromMap(snapshot.data()!);
+  }
+}
+
+Stream<List<Estadisticas>> leerClasificacion() {
+  return FirebaseFirestore.instance.collection('clasificacion').snapshots().map(
+      (snapshot) =>
+          snapshot.docs.map((doc) => Estadisticas.fromMap(doc.data())).toList());
 }

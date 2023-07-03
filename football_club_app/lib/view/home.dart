@@ -124,7 +124,7 @@ currentPage(int index, int pIndex, Socio socio) {
     return const TabBarView(children: [
         Resumen(),
         Partidos(),
-        Estadisticas(),
+        EstadisticasW(),
       ],);
   } else {
     

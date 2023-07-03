@@ -1,108 +1,102 @@
 import 'package:flutter/material.dart';
+import 'package:football_club_app/controller/controlador.dart';
+import 'package:football_club_app/model/estadisticas.dart';
+import 'package:football_club_app/model/socio.dart';
 
-class Estadisticas extends StatefulWidget {
-  const Estadisticas({super.key});
+class EstadisticasW extends StatefulWidget {
+  const EstadisticasW({super.key});
 
   @override
-  State<Estadisticas> createState() => _EstadisticasState();
+  State<EstadisticasW> createState() => _EstadisticasWState();
 }
 
-class _EstadisticasState extends State<Estadisticas> {
-  var goles = {
-    "Rafa": 13,
-    "Jose": 15,
-    "Juanjo": 16,
-    "Nene": 2,
-    "Sam": 7,
-    "Joseles": 9,
-    "Antonio": 1,
-    "Joaquin": 10,
-    "M.Pardo": 3,
-    "Sergio": 4,
-    "Francis": 6,
-    "Victor": 4,
-  };
-
-  var jugadores = [
-    "Rafa",
-    "Jose",
-    "Juanjo",
-    "Nene",
-    "Sam",
-    "Joseles",
-    "Antonio",
-    "Joaquin",
-    "M.Pardo",
-    "Sergio",
-    "Francis",
-    "Victor"
-  ];
+class _EstadisticasWState extends State<EstadisticasW> {
 
   @override
   Widget build(BuildContext context) {
     //Ordenamos jugadores con sus goles de mayor a menor
-    var sortedMap = Map.fromEntries(
-        goles.entries.toList()..sort((e1, e2) => e2.value.compareTo(e1.value)));
-    
-    List<Widget> mywidgets = [];
-    mywidgets
-        .add(Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
-      Container(
-        width: 30,
-        child: const Text(
-          "Pos",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-        ),
-      ),
-      Container(
-        width: 70,
-        child: const Text(
-          "Jugador",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-        ),
-      ),
-      Container(
-        width: 50,
-        alignment: Alignment.center,
-        child: const Text(
-          "Goles",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-        ),
-      ),
-    ]));
-    mywidgets.add(const Divider(
-      thickness: 2,
-    ));
-    for (int x = 0; x < sortedMap.length; x++) {
-      mywidgets.add(Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          Container(
-            width: 30,
-            child: Text(
-              (x + 1).toString(),
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w300),
-            ),
+
+    List<Widget> buildPichichi(List<Estadisticas> clasificacion) {
+      List<Widget> mywidgets = [];
+      clasificacion.sort((a, b) => b.goles.compareTo(a.goles));
+      mywidgets
+          .add(Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
+        const SizedBox(
+          width: 30,
+          child: Text(
+            "Pos",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
           ),
-          Container(
-            width: 70,
-            child: Text(
-              sortedMap.keys.elementAt(x),
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w300),
-            ),
+        ),
+        const SizedBox(
+          width: 70,
+          child: Text(
+            "Jugador",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
           ),
-          Container(
-            width: 50,
-            alignment: Alignment.center,
-            child: Text(
-              sortedMap[sortedMap.keys.elementAt(x)].toString(),
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w300),
-            ),
+        ),
+        Container(
+          width: 50,
+          alignment: Alignment.center,
+          child: const Text(
+            "Goles",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
           ),
-        ],
+        ),
+      ]));
+      mywidgets.add(const Divider(
+        thickness: 2,
       ));
-      mywidgets.add(const Divider());
+      for (int x = 0; x < clasificacion.length; x++) {
+        mywidgets.add(
+          FutureBuilder<Socio?>(
+            future: leerSocio(clasificacion[x].email),
+            builder: (context, snapshot) {              
+              if (snapshot.hasData) {
+                final user = snapshot.data!;
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    SizedBox(
+                      width: 30,
+                      child: Text(
+                        (x + 1).toString(),
+                        style: const TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w300),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 70,
+                      child: Text(
+                       user.alias != ""
+                          ? user.alias.toString()
+                          : (user.nombre.toString()),
+                        style: const TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w300),
+                      ),
+                    ),
+                    Container(
+                      width: 50,
+                      alignment: Alignment.center,
+                      child: Text(
+                        clasificacion[x].goles.toString(),
+                        style: const TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w300),
+                      ),
+                    ),
+                  ],
+                );
+              } else if (snapshot.hasError) {
+                return Text(snapshot.error.toString());
+              }else {
+                return Text("no data");
+              }
+            }));
+        mywidgets.add(const Divider());
+      }
+      return mywidgets;
     }
+
     return ListView(
       padding: const EdgeInsets.all(20),
       children: [
@@ -117,7 +111,7 @@ class _EstadisticasState extends State<Estadisticas> {
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: const [                
+              children: const [
                 Text(
                   "MÁXIMOS GOLEADORES",
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -137,7 +131,21 @@ class _EstadisticasState extends State<Estadisticas> {
                   bottomLeft: Radius.circular(10),
                   bottomRight: Radius.circular(10)),
             ),
-            child: Column(children: mywidgets))
+            child: StreamBuilder<List<Estadisticas>>(
+              stream: leerClasificacion(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  final clasificacion = snapshot.data!;
+                  return Column(
+                    children: buildPichichi(clasificacion),
+                  );
+                } else if (snapshot.hasError) {
+                  return Text(snapshot.error.toString());
+                } else {
+                  return const CircularProgressIndicator();
+                }
+              },
+            ))
       ],
     );
   }
