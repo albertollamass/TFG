@@ -53,7 +53,9 @@ class _ResumenPartidoState extends State<ResumenPartido> {
                   onTap: () async {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => EditarEquipos()),
+                      MaterialPageRoute(
+                          builder: (context) => EditarEquipos(
+                              partido: widget.partido, equipos: equipos)),
                     );
                   })
               : const Text(""),
@@ -64,6 +66,7 @@ class _ResumenPartidoState extends State<ResumenPartido> {
           height: 20,
         ),
       );
+      int k = 0;
       for (int i = 0; i < equipos.length; i++) {
         equiposW.add(Text(
           equipos[i].color.toUpperCase(),
@@ -75,7 +78,8 @@ class _ResumenPartidoState extends State<ResumenPartido> {
           ),
         );
         for (int j = 0; j < equipos[i].jugadores.length; j++) {
-          golesJugadores.add(TextEditingController());
+          
+          golesJugadores.add(TextEditingController(text: "0"));          
           equiposW.add(Row(children: [
             i == 1
                 ? const Icon(
@@ -100,7 +104,9 @@ class _ResumenPartidoState extends State<ResumenPartido> {
                   if (snapshot.hasData) {
                     final user = snapshot.data!;
                     return Text(
-                      user.alias != "" ? user.alias.toString() :("${user.nombre} ${user.apellidos}"),
+                      user.alias != ""
+                          ? user.alias.toString()
+                          : ("${user.nombre} ${user.apellidos}"),
                       style: const TextStyle(
                           fontWeight: FontWeight.w500, fontSize: 20),
                     );
@@ -120,12 +126,12 @@ class _ResumenPartidoState extends State<ResumenPartido> {
                 ? SizedBox(
                     width: 23,
                     child: TextFormField(
-                      controller: golesJugadores[j],
+                      controller: golesJugadores[k],
                       inputFormatters: <TextInputFormatter>[
-                        FilteringTextInputFormatter.digitsOnly
+                        FilteringTextInputFormatter.digitsOnly,
+                        LengthLimitingTextInputFormatter(2)
                       ],
                       keyboardType: TextInputType.number,
-                      maxLength: 2,
                     ),
                   )
                 // : indexGol != -1
@@ -152,25 +158,91 @@ class _ResumenPartidoState extends State<ResumenPartido> {
               height: 10,
             ),
           );
+          k++;
         }
         equiposW.add(
           const SizedBox(
             height: 10,
           ),
         );
+        
       }
 
       equiposW.add(
         widget.esAdmin
             ? ElevatedButton(
                 onPressed: () async {
+                  Map<String, int> golesPartido = {};
                   try {
+                    print(golesJugadores.length);
+                    int k = 0;
                     for (int i = 0; i < equipos.length; i++) {
                       for (int j = 0; j < equipos[i].jugadores.length; j++) {
-                        actualizarGolesJugador(equipos[i].jugadores[j],
-                            golesJugadores[j].text.trim());
+                        actualizarGolesJugador(equipos[i].jugadores[j].toLowerCase(),
+                            golesJugadores[k].text.trim());
+                        if (golesJugadores[k].text.trim() != "0") {
+                          final gol = <String, int>{
+                            equipos[i].jugadores[j].toLowerCase():
+                                int.parse(golesJugadores[k].text.trim())
+                          };
+                          golesPartido.addEntries(gol.entries);
+                          if (equipos[i].color == "blanco") {
+                            widget.partido.golesBlanco =
+                                widget.partido.golesBlanco +
+                                    int.parse(golesJugadores[k].text.trim());
+                          } else {
+                            widget.partido.golesNegro =
+                                widget.partido.golesNegro +
+                                    int.parse(golesJugadores[k].text.trim());
+                          }
+                        }
+                        k++;
                       }
                     }
+                    bool blancoGanado = false, negroGanado = false;
+                    if (widget.partido.golesBlanco >
+                        widget.partido.golesNegro) {
+                      blancoGanado = true;
+                    } else if (widget.partido.golesBlanco <
+                        widget.partido.golesNegro) {
+                      negroGanado = true;
+                    }
+
+                    final docPartido = FirebaseFirestore.instance
+                        .collection('partidos')
+                        .doc(widget.partido.fechaPartido.millisecondsSinceEpoch
+                            .toString());
+                    DocumentSnapshot snapshot = await docPartido.get();
+
+                    if (snapshot.exists) {
+                      docPartido.update({
+                        'golesBlanco': widget.partido.golesBlanco,
+                        'golesNegro': widget.partido.golesNegro,
+                        'goles': golesPartido
+                      });
+                    }
+
+                    for (int i = 0; i < equipos.length; i++) {
+                      for (int j = 0; j < equipos[i].jugadores.length; j++) {
+                        if (blancoGanado) {
+                          if (equipos[i].color == "blanco") {
+                            actualizarPartidosGanador(equipos[i].jugadores[j].toLowerCase());
+                          } else {
+                            actualizarPartidosPerdedor(equipos[i].jugadores[j].toLowerCase());
+                          }
+                        } else if (negroGanado) {
+                          if (equipos[i].color == "negro") {
+                            actualizarPartidosGanador(equipos[i].jugadores[j].toLowerCase());
+                          } else {
+                            actualizarPartidosPerdedor(equipos[i].jugadores[j].toLowerCase());
+                          }
+                        } else {
+                          //print(equipos[i].jugadores[j]);
+                          actualizarPartidosEmpate(equipos[i].jugadores[j].toLowerCase());
+                        }
+                      }
+                    }
+                    golesJugadores.clear();
                   } on FirebaseException catch (e) {
                     print(e.message);
                   }

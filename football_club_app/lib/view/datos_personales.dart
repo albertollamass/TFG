@@ -1,7 +1,9 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
 import 'package:football_club_app/controller/controlador.dart';
 import 'package:football_club_app/view/home.dart';
 import 'package:football_club_app/view/perfil.dart';
@@ -10,7 +12,12 @@ import '../model/socio.dart';
 
 class DatosPersonales extends StatefulWidget {
   final Socio socio;
-  const DatosPersonales({Key? key, required this.socio}) : super(key: key);
+  bool esSolicitud;
+  DatosPersonales({
+    Key? key,
+    required this.socio,
+    required this.esSolicitud,
+  }) : super(key: key);
 
   @override
   State<DatosPersonales> createState() => _DatosPersonalesState();
@@ -36,9 +43,9 @@ class _DatosPersonalesState extends State<DatosPersonales> {
         text: widget.socio.alias != "" ? widget.socio.alias : '');
     return Scaffold(
         appBar: AppBar(
-          title: const Text(
-            "DATOS PERSONALES",
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+          title: Text(
+            !widget.esSolicitud ? "DATOS PERSONALES" : "EDITAR SOLICITUD",
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
           ),
           centerTitle: true,
           elevation: 0,
@@ -128,78 +135,94 @@ class _DatosPersonalesState extends State<DatosPersonales> {
                     keyboardType: TextInputType.number,
                     controller: phoneController,
                     decoration: const InputDecoration(icon: Icon(Icons.phone))),
-                const SizedBox(
+                !widget.esSolicitud?const SizedBox(
                   height: 20,
-                ),
-                const Text(
+                ):const SizedBox(height: 0,),
+                !widget.esSolicitud? const Text(
                   "ANTIGUA CONTRASEÑA",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Color(0xff5C5858),
                       fontSize: 16),
-                ),
-                TextFormField(
+                ) : const SizedBox(height: 0,),
+                !widget.esSolicitud? TextFormField(
                     obscureText: true,
                     controller: passwdController,
                     decoration:
-                        const InputDecoration(icon: Icon(Icons.password))),
-                const SizedBox(
+                        const InputDecoration(icon: Icon(Icons.password))) : const SizedBox(height: 0,),
+                !widget.esSolicitud? const SizedBox(
                   height: 20,
-                ),
-                const Text(
+                ) : const SizedBox(height: 0,),
+                !widget.esSolicitud? const Text(
                   "NUEVA CONTRASEÑA",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Color(0xff5C5858),
                       fontSize: 16),
-                ),
-                TextFormField(
+                ) : const SizedBox(height: 0,),
+                !widget.esSolicitud? TextFormField(
                     controller: cpasswdController,
                     obscureText: true,
                     decoration:
-                        const InputDecoration(icon: Icon(Icons.password))),
-                const SizedBox(
+                        const InputDecoration(icon: Icon(Icons.password))) : const SizedBox(height: 0,),
+              !widget.esSolicitud? const SizedBox(
                   height: 20,
-                ),
+                ): const Text(""),
                 ElevatedButton(
                   onPressed: () async {
-                    final docSocio = FirebaseFirestore.instance
-                        .collection('socios')
-                        .doc(widget.socio.email);
-                    docSocio.update({
-                      'alias': aliasController.text.trim(),
-                      'apellidos': surnameController.text.trim(),
-                      'nombre': nameController.text.trim(),
-                      'telefono': int.parse(phoneController.text.trim()),
-                    });
-                    final currentUser = FirebaseAuth.instance.currentUser;
-                    try {
-                      if (passwdController.text.trim() != "") {
-                        if (comprobarPass(widget.socio.password.toString(),
-                            passwdController.text.trim())) {
-                          final credential = EmailAuthProvider.credential(
-                              email: currentUser!.email.toString(),
-                              password: passwdController.text.trim());
-                          currentUser.reauthenticateWithCredential(credential);
-                          currentUser
-                              .updatePassword(cpasswdController.text.trim());
-                          docSocio.update(
-                              {'password': cpasswdController.text.trim()});
-                        } else {
-                          const snackBar = SnackBar(
-                            content:
-                                Text('ERROR! Contraseña antigua incorrecta'),
-                          );
-                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    if (!widget.esSolicitud) {
+                      final docSocio = FirebaseFirestore.instance
+                          .collection('socios')
+                          .doc(widget.socio.email);
+                      docSocio.update({
+                        'alias': aliasController.text.trim(),
+                        'apellidos': surnameController.text.trim(),
+                        'nombre': nameController.text.trim(),
+                        'telefono': int.parse(phoneController.text.trim()),
+                      });
+                      final currentUser = FirebaseAuth.instance.currentUser;
+                      try {
+                        if (passwdController.text.trim() != "") {
+                          if (comprobarPass(widget.socio.password.toString(),
+                              passwdController.text.trim())) {
+                            final credential = EmailAuthProvider.credential(
+                                email: currentUser!.email.toString(),
+                                password: passwdController.text.trim());
+                            currentUser
+                                .reauthenticateWithCredential(credential);
+                            currentUser
+                                .updatePassword(cpasswdController.text.trim());
+                            docSocio.update(
+                                {'password': cpasswdController.text.trim()});
+                          } else {
+                            const snackBar = SnackBar(
+                              content:
+                                  Text('ERROR! Contraseña antigua incorrecta'),
+                            );
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(snackBar);
+                          }
                         }
+                      } on FirebaseException catch (e) {
+                        print(e);
                       }
-                    } on FirebaseException catch (e) {
-                      print(e);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const Home()),
+                      );
+                    } else {
+                      final docSocio = FirebaseFirestore.instance
+                          .collection('solicitudes')
+                          .doc(widget.socio.email);
+                      docSocio.update({
+                        'alias': aliasController.text.trim(),
+                        'apellidos': surnameController.text.trim(),
+                        'nombre': nameController.text.trim(),
+                        'telefono': int.parse(phoneController.text.trim()),
+                      });
+                      Navigator.pop(context);
                     }
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const Home()),
-                    );
+
                     const snackBar = SnackBar(
                       content: Text('Datos actualizados correctamente'),
                     );

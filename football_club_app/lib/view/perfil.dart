@@ -148,6 +148,7 @@ class _PerfilState extends State<Perfil> {
                                             builder: (context) =>
                                                 DatosPersonales(
                                                   socio: user,
+                                                  esSolicitud: false,
                                                 )),
                                       );
                                     },
@@ -381,7 +382,7 @@ class _PerfilState extends State<Perfil> {
                                         onTap: () {
                                           Equipo equipo1 = Equipo(
                                               color: "negro",
-                                              fechaEquipo: DateTime(2023, 3, 13),
+                                              fechaEquipo: DateTime(2023, 6, 30),
                                               jugadores: [
                                                 "Antonio@gmail.com",
                                                 "Joaquin@gmail.com",
@@ -392,7 +393,7 @@ class _PerfilState extends State<Perfil> {
                                               ]);
                                           Equipo equipo2 = Equipo(
                                               color: "blanco",
-                                              fechaEquipo: DateTime(2023, 3, 13),
+                                              fechaEquipo: DateTime(2023, 6, 30),
                                               jugadores: [
                                                 "rafa@gmail.com",
                                                 "jose@gmail.com",
@@ -403,7 +404,7 @@ class _PerfilState extends State<Perfil> {
                                               ]);
                                           //crearEquipo([]);
                                           //crearPartido(equipo1.fechaEquipo,
-                                          //     equipo1, equipo2);
+                                              //equipo1, equipo2);
 
                                           Navigator.push(
                                             context,
@@ -427,7 +428,7 @@ class _PerfilState extends State<Perfil> {
                                             width: 20,
                                           ),
                                           Text(
-                                            "Gestionar pagos",
+                                            "Transacciones",
                                             style: TextStyle(
                                                 fontSize: 20,
                                                 fontWeight: FontWeight.w500,

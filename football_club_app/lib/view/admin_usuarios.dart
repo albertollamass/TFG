@@ -57,6 +57,7 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                 MaterialPageRoute(
                     builder: (context) => DatosPersonales(
                           socio: socio,
+                          esSolicitud: false,
                         )),
               );
             },

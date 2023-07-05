@@ -134,11 +134,11 @@ Future<Carta?> leerCartaSocio(String email) async {
 }
 
 Stream<List<Partido>> leerUltimoPartido() {
-  final docSocio = FirebaseFirestore.instance.collection('partidos').snapshots();
+  final docSocio =
+      FirebaseFirestore.instance.collection('partidos').snapshots();
 
-   return docSocio.map((snapshot) =>
+  return docSocio.map((snapshot) =>
       snapshot.docs.map((doc) => Partido.fromMap(doc.data())).toList());
-    
 }
 
 Future addOperacion(int cantidad, List<String> emails) async {
@@ -258,7 +258,7 @@ Stream<List<Partido>> leerPartidos() {
 
 Future crearEquipo(List<String> jugadores) async {
   Equipo equipo1 =
-      Equipo(color: "negro", fechaEquipo: DateTime(2023, 3, 13), jugadores: [
+      Equipo(color: "negro", fechaEquipo: DateTime(2023, 6, 30), jugadores: [
     "Antonio@gmail.com",
     "Joaquin@gmail.com",
     "M.Pardo@gmail.com",
@@ -267,7 +267,7 @@ Future crearEquipo(List<String> jugadores) async {
     "Victor@gmail.com"
   ]);
   Equipo equipo2 =
-      Equipo(color: "blanco", fechaEquipo: DateTime(2023, 3, 13), jugadores: [
+      Equipo(color: "blanco", fechaEquipo: DateTime(2023, 6, 30), jugadores: [
     "rafa@gmail.com",
     "jose@gmail.com",
     "Juanjo@gmail.com",
@@ -294,7 +294,8 @@ Future crearPartido(DateTime fecha, Equipo negro, Equipo blanco) async {
       .collection('partidos')
       .doc(fecha.millisecondsSinceEpoch.toString());
 
-  Partido partido = Partido(fechaPartido: fecha, golesBlanco: 0, golesNegro: 0);
+  Partido partido =
+      Partido(fechaPartido: fecha, golesBlanco: 0, golesNegro: 0, goles: {});
 
   final json = partido.toMap();
 
@@ -311,10 +312,79 @@ Stream<List<Equipo>> leerEquiposPartido(DateTime fecha) {
 }
 
 Future actualizarGolesJugador(String email, String goles) async {
+  //actualizar en clasificacion
   final docSocio =
       FirebaseFirestore.instance.collection('clasificacion').doc(email);
 
-  docSocio.update({'goles': int.parse(goles)});
+  DocumentSnapshot snapshot = await docSocio.get();
+
+  if (snapshot.exists) {
+    // Access the value of a specific field
+    int fieldValue = snapshot['goles'];
+    docSocio.update({'goles': fieldValue + int.parse(goles)});
+  } 
+  //actualizar en partido
+}
+
+Future actualizarPartidosGanador(String email) async {
+  //actualizar en clasificacion
+  final docSocio =
+      FirebaseFirestore.instance.collection('clasificacion').doc(email);
+
+  DocumentSnapshot snapshot = await docSocio.get();
+
+  if (snapshot.exists) {
+    // Access the value of a specific field
+    int pj = snapshot['partidosJugados'];
+    int pg = snapshot['partidosGanados'];
+    int pts = snapshot['puntos'];
+    docSocio.update({
+        'partidosJugados': pj + 1,
+        'partidosGanados': pg + 1,
+        'puntos': pts + 3
+      });
+  } 
+  //actualizar en partido
+}
+
+Future actualizarPartidosPerdedor(String email) async {
+  //actualizar en clasificacion
+  final docSocio =
+      FirebaseFirestore.instance.collection('clasificacion').doc(email);
+
+  DocumentSnapshot snapshot = await docSocio.get();
+
+  if (snapshot.exists) {
+    // Access the value of a specific field
+    int pj = snapshot['partidosJugados'];
+    int pp = snapshot['partidosPerdidos'];
+    docSocio.update({
+        'partidosJugados': pj + 1,
+        'partidosPerdidos': pp + 1,
+      });
+  } 
+  //actualizar en partido
+}
+
+Future actualizarPartidosEmpate(String email) async {
+  //actualizar en clasificacion
+  final docSocio =
+      FirebaseFirestore.instance.collection('clasificacion').doc(email);
+
+  DocumentSnapshot snapshot = await docSocio.get();
+
+  if (snapshot.exists) {
+    // Access the value of a specific field
+    // int pj = snapshot['partidosJugados'];
+    // int pe = snapshot['partidosEmpatados'];
+    // int pts = snapshot['puntos'];
+    // docSocio.update({
+    //     'partidosJugados': pj + 1,
+    //     'partidosEmpatados': pe + 1,
+    //     'puntos' : pts + 1
+    //   });
+  } 
+  //actualizar en partido
 }
 
 Future<Estadisticas?> getEstadisticasSocio(String email) async {
@@ -329,6 +399,7 @@ Future<Estadisticas?> getEstadisticasSocio(String email) async {
 
 Stream<List<Estadisticas>> leerClasificacion() {
   return FirebaseFirestore.instance.collection('clasificacion').snapshots().map(
-      (snapshot) =>
-          snapshot.docs.map((doc) => Estadisticas.fromMap(doc.data())).toList());
+      (snapshot) => snapshot.docs
+          .map((doc) => Estadisticas.fromMap(doc.data()))
+          .toList());
 }

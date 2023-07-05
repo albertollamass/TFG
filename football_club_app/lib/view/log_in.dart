@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:football_club_app/view/forgotten_password.dart';
 import 'package:football_club_app/view/home.dart';
 import 'package:football_club_app/view/loaderToHome.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../model/socio.dart';
 
@@ -20,23 +21,55 @@ class LogIn extends StatefulWidget {
 }
 
 class _LogInState extends State<LogIn> {
-  Socio socio = Socio(
-      nombre: "Pablo",
-      apellidos: "Perez",
-      email: "pabloperez@gmail.com",
-      telefono: 611611611,
-      password: "pablo0_",
-      saldo: 50,
-      alias: "Pablito",
-      esAdmin: true);
+  late SharedPreferences sharedPreferences;
   bool? recordarCredenciales = false;
+  TextEditingController correoController = TextEditingController();
+  TextEditingController passwdController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    getCredential();
+  }
+
+  getCredential() async {
+    sharedPreferences = await SharedPreferences.getInstance();
+    setState(() {
+      recordarCredenciales = sharedPreferences.getBool("remember_me");
+      if (recordarCredenciales != null) {
+        if (recordarCredenciales!) {
+          correoController.text =
+              sharedPreferences.getString("email").toString();
+          passwdController.text =
+              sharedPreferences.getString("password").toString();
+        } else {
+          correoController.clear();
+          passwdController.clear();
+          sharedPreferences.clear();
+        }
+      } else {
+        recordarCredenciales = false;
+      }
+    });
+  }
+
   bool isLoading = false;
+  bool passwordVisible = false;
   final ButtonStyle styleInic = ElevatedButton.styleFrom(
       textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
       backgroundColor: const Color.fromARGB(255, 67, 159, 162),
       padding: const EdgeInsets.fromLTRB(90.0, 16.0, 90.0, 16.0));
-  TextEditingController correoController = TextEditingController();
-  TextEditingController passwdController = TextEditingController();
+
+  actionRemeberMe(bool value) {
+    recordarCredenciales = value;
+    SharedPreferences.getInstance().then(
+      (prefs) {
+        prefs.setBool("remember_me", value);
+        prefs.setString('email', correoController.text);
+        prefs.setString('password', passwdController.text);
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) => isLoading
@@ -55,39 +88,44 @@ class _LogInState extends State<LogIn> {
                   Column(mainAxisAlignment: MainAxisAlignment.start, children: [
                 TextFormField(
                   controller: correoController,
-                  validator: (value) {
-                    if (value != socio.email) {
-                      return "Introduce el correo electronico";
-                    } else {
-                      return "okey";
+                  validator: (val) {
+                    if (val!.isEmpty) {
+                      return 'Por favor introduzca un correo electrónico';
                     }
+                    return null;
                   },
                   decoration: const InputDecoration(
                       icon: Icon(Icons.person), hintText: 'Correo electrónico'),
                 ),
                 TextFormField(
-                  obscureText: true,
+                  obscureText: !passwordVisible,
                   controller: passwdController,
                   validator: (value) {
-                    if (value!.isNotEmpty) {
-                      print("entro");
-                      return "Contraseña Incorrecta";
+                    if (value!.isEmpty) {
+                      return 'Please enter password';
                     }
-                    return "okey";
+                    return null;
                   },
-                  decoration: const InputDecoration(
-                      icon: Icon(Icons.password_rounded),
-                      hintText: 'Contraseña'),
+                  decoration: InputDecoration(
+                    icon: const Icon(Icons.password_rounded),
+                    hintText: 'Contraseña',
+                    suffixIcon: IconButton(
+                        icon: passwordVisible
+                            ? const Icon(Icons.visibility_off)
+                            : const Icon(Icons.visibility),
+                        onPressed: () {
+                          setState(() {
+                            passwordVisible = !passwordVisible;
+                          });
+                        }),
+                  ),
                 ),
-                CheckboxListTile(
-                  title: const Text("Recordar credenciales"),
-                  controlAffinity: ListTileControlAffinity.leading,
+                Checkbox(
                   value: recordarCredenciales,
                   activeColor: Colors.blueGrey,
-                  tristate: false,
-                  onChanged: (newBool) {
+                  onChanged: (bool? value) {
                     setState(() {
-                      recordarCredenciales = newBool;
+                      recordarCredenciales = value;
                     });
                   },
                 ),
@@ -144,10 +182,14 @@ class _LogInState extends State<LogIn> {
     //                                 credencialesErroneas: true,
     //                               )),
     //                     );
-    showDialog(context: context, barrierDismissible:false,
-                builder: (context) {
-                  return const Center(child: CircularProgressIndicator(),);
-                });
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        });
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: correoController.text.trim(),
