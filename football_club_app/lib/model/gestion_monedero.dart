@@ -12,17 +12,6 @@ class GestionMonedero {
     required this.fecha,
   });
 
-  GestionMonedero copyWith({
-    int? cantidad,
-    String? email,
-    DateTime? fecha,
-  }) {
-    return GestionMonedero(
-      cantidad: cantidad ?? this.cantidad,
-      email: email ?? this.email,
-      fecha: fecha ?? this.fecha,
-    );
-  }
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
@@ -47,16 +36,4 @@ class GestionMonedero {
   @override
   String toString() => 'GestionMonedero(cantidad: $cantidad, email: $email, fecha: $fecha)';
 
-  @override
-  bool operator ==(covariant GestionMonedero other) {
-    if (identical(this, other)) return true;
-  
-    return 
-      other.cantidad == cantidad &&
-      other.email == email &&
-      other.fecha == fecha;
-  }
-
-  @override
-  int get hashCode => cantidad.hashCode ^ email.hashCode ^ fecha.hashCode;
 }

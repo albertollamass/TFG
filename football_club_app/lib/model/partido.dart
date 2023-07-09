@@ -3,20 +3,19 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 
-import 'equipo.dart';
-
 class Partido {
   DateTime fechaPartido;
   int golesBlanco;
   int golesNegro;
   Map<String, int> goles;
+  bool yaEditado;
 
-  //pensando que se puede omitir al tener tbn en equipos la fecha
   Partido({
     required this.fechaPartido,
     required this.golesBlanco,
     required this.golesNegro,
     required this.goles,
+    required this.yaEditado
   });
 
   Map<String, dynamic> toMap() {
@@ -25,6 +24,7 @@ class Partido {
       'golesBlanco': golesBlanco,
       'golesNegro': golesNegro,
       'goles': goles,
+      'yaEditado': yaEditado,
     };
   }
 
@@ -35,13 +35,12 @@ class Partido {
     golesMap.forEach((key, value) {
       convertedGoles[key] = value as int;
     });
-
     return Partido(
-      fechaPartido:
-          DateTime.fromMillisecondsSinceEpoch(map['fechaPartido'] as int),
+      fechaPartido: DateTime.fromMillisecondsSinceEpoch(map['fechaPartido'] as int),
       golesBlanco: map['golesBlanco'] as int,
       golesNegro: map['golesNegro'] as int,
       goles: convertedGoles,
+      yaEditado: map['yaEditado'] as bool,
     );
   }
 
@@ -50,40 +49,9 @@ class Partido {
   factory Partido.fromJson(String source) =>
       Partido.fromMap(json.decode(source) as Map<String, dynamic>);
 
-  Partido copyWith({
-    DateTime? fechaPartido,
-    int? golesBlanco,
-    int? golesNegro,
-    Map<String, int>? goles,
-  }) {
-    return Partido(
-      fechaPartido: fechaPartido ?? this.fechaPartido,
-      golesBlanco: golesBlanco ?? this.golesBlanco,
-      golesNegro: golesNegro ?? this.golesNegro,
-      goles: goles ?? this.goles,
-    );
-  }
-
   @override
   String toString() {
-    return 'Partido(fechaPartido: $fechaPartido, golesBlanco: $golesBlanco, golesNegro: $golesNegro, goles: $goles)';
+    return 'Partido(fechaPartido: $fechaPartido, golesBlanco: $golesBlanco, golesNegro: $golesNegro, goles: $goles, yaEditado: $yaEditado)';
   }
 
-  @override
-  bool operator ==(covariant Partido other) {
-    if (identical(this, other)) return true;
-
-    return other.fechaPartido == fechaPartido &&
-        other.golesBlanco == golesBlanco &&
-        other.golesNegro == golesNegro &&
-        mapEquals(other.goles, goles);
-  }
-
-  @override
-  int get hashCode {
-    return fechaPartido.hashCode ^
-        golesBlanco.hashCode ^
-        golesNegro.hashCode ^
-        goles.hashCode;
-  }
 }

@@ -31,8 +31,7 @@ class _HomeState extends State<Home> {
       password: "pablo0_",
       saldo: 50,
       alias: "Pablito",
-      esAdmin: true);
-    print(user.email);
+      esAdmin: true);    
     const tabBarStyle = TextStyle(fontSize: 20);
     return Stack(
       children: [

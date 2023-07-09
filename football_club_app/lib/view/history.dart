@@ -107,10 +107,32 @@ class _HistoryState extends State<History> {
             stream: leerPagosSocio(usuarioActivo.toString()),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
-                final operaciones = snapshot.data;
-                return ListView(
-                  children: operaciones!.map(buildOperacion).toList(),
+                final operaciones = snapshot.data!;
+                if (operaciones.isNotEmpty){
+                  return ListView(
+                  children: operaciones.map(buildOperacion).toList(),
                 );
+                } else {
+                  return Center(
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                        Icon(
+                          Icons.payment,
+                          size: 60,
+                        ),
+                        SizedBox(
+                          height: 40,
+                        ),
+                        Text(                                                    
+                          "TODAVÍA NO SE HAN REALIZADO OPERACIONES",
+                          style: TextStyle(                              
+                              fontSize: 20, fontWeight: FontWeight.bold, ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ]));
+                }
+                
               } else {
                 print(snapshot.toString());
                 return const Center(child: CircularProgressIndicator(),);

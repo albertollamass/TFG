@@ -1,55 +1,28 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+
+import 'package:football_club_app/controller/controlador.dart';
 import 'package:football_club_app/model/equipo.dart';
 import 'package:football_club_app/model/partido.dart';
+import 'package:football_club_app/model/socio.dart';
 import 'package:football_club_app/view/info_partido.dart';
-import 'package:football_club_app/controller/controlador.dart';
 
 class AdminPartidos extends StatefulWidget {
-  const AdminPartidos({super.key});
+  List<String> emails;
+  AdminPartidos({
+    Key? key,
+    required this.emails,
+  }) : super(key: key);
 
   @override
   State<AdminPartidos> createState() => _AdminPartidosState();
 }
 
 class _AdminPartidosState extends State<AdminPartidos> {
-  //Hacer fetch partidos
-
+  DateTime fechaNuevoPartido = DateTime.now();
   @override
   Widget build(BuildContext context) {
-    Equipo equipo1 = Equipo(
-        color: "negro",
-        fechaEquipo: DateTime(2023, 3, 13),
-        jugadores: [
-          "Antonio",
-          "Joaquin",
-          "M.Pardo",
-          "Sergio",
-          "Francis",
-          "Victor"
-        ]);
-    Equipo equipo2 =
-        Equipo(color: "blanco", fechaEquipo: DateTime(2023, 3, 13), jugadores: [
-      "Rafa",
-      "Jose",
-      "Juanjo",
-      "Nene",
-      "Sam",
-      "Joseles",
-    ]);
-
-    List<Equipo> equipos = [];
-    equipos.add(equipo1);
-    equipos.add(equipo2);
-
-    List<Partido> partidos = [];
-
-    partidos.sort((a, b) {
-      //sorting in ascending order
-      return DateTime.parse(a.fechaPartido.toString())
-          .compareTo(DateTime.parse(b.fechaPartido.toString()));
-    });
-
     return Scaffold(
         appBar: AppBar(
           title: const Text(
@@ -60,6 +33,86 @@ class _AdminPartidosState extends State<AdminPartidos> {
           elevation: 0,
         ),
         backgroundColor: const Color(0xff2B4EA1),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        floatingActionButton: FloatingActionButton(
+            heroTag: "btnAdd",
+            backgroundColor: Colors.blueAccent,
+            onPressed: () {
+              AlertDialog alert = AlertDialog(
+                title: const Text("Nuevo Partido"),
+                content: Container(
+                  height: 50,
+                  child: Column(
+                    children: [
+                      ElevatedButton(
+                          onPressed: () async {
+                            DateTime? pickedDate = (await showDatePicker(
+                                context: context,
+                                initialDate: fechaNuevoPartido,
+                                firstDate: DateTime(2000),
+                                lastDate: DateTime(2101)))!;
+
+                            if (pickedDate != null) {
+                              setState(() {
+                                fechaNuevoPartido = pickedDate;
+                                print(pickedDate);
+                              });
+                            }
+                          },
+                          child: const Text("Elige fecha partido")),
+                      const Divider(),
+                    ],
+                  ),
+                ),
+                actions: [
+                  TextButton(
+                    child: const Text(
+                      "Crear Partido",
+                      style: TextStyle(color: Colors.blueAccent),
+                    ),
+                    onPressed: () {
+                      try {
+                        crearPartido(fechaNuevoPartido);
+                        enviarNotificacion("Nuevo partido", "Programado nuevo partido para el día ${fechaNuevoPartido.day} - ${fechaNuevoPartido.month}", widget.emails);
+                        Navigator.pop(context);
+                        Navigator.pop(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => AdminPartidos(
+                                    emails: widget.emails,
+                                  )),
+                        );
+                        const snackBar = SnackBar(
+                          content: Text('Partido creado correctamente'),
+                        );
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                      } on FirebaseException catch (e) {
+                        const snackBar = SnackBar(
+                          content: Text('Error creando partido'),
+                        );
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                      }
+                    },
+                  ),
+                  TextButton(
+                    child: const Text("Cancelar"),
+                    onPressed: () => {
+                      Navigator.pop(context),
+                    },
+                  )
+                ],
+              );
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return alert;
+                  });
+            },
+            child: const Icon(
+              Icons.add,
+              size: 35,
+            )),
         body: Center(
             child: Container(
           height: 780,
@@ -173,7 +226,7 @@ class _AdminPartidosState extends State<AdminPartidos> {
                           ),
                           if (partidos[i]
                                   .fechaPartido
-                                  .compareTo(DateTime.now()) >
+                                  .compareTo(DateTime.now()) >=
                               0)
                             ElevatedButton(
                               onPressed: () {
@@ -189,9 +242,45 @@ class _AdminPartidosState extends State<AdminPartidos> {
                                             TextStyle(color: Color(0xffD01E1E)),
                                       ),
                                       onPressed: () {
-                                        final docPartido = FirebaseFirestore.instance.collection('partidos').doc(partidos[i].fechaPartido.millisecondsSinceEpoch.toString());
-                                        docPartido.delete();
-                                        Navigator.pop(context);
+                                        try {
+                                          final docPartido = FirebaseFirestore
+                                              .instance
+                                              .collection('partidos')
+                                              .doc(partidos[i]
+                                                  .fechaPartido
+                                                  .millisecondsSinceEpoch
+                                                  .toString());
+                                          docPartido.delete();
+
+                                          FirebaseFirestore.instance
+                                              .collection('equipos')
+                                              .doc(
+                                                  "negro_${partidos[i].fechaPartido}")
+                                              .delete();
+                                          FirebaseFirestore.instance
+                                              .collection('equipos')
+                                              .doc(
+                                                  "blanco_${partidos[i].fechaPartido}")
+                                              .delete();
+                                          enviarNotificacion(
+                                              "Cancelado ${partidos[i].fechaPartido.day}-${partidos[i].fechaPartido.month}",
+                                              "Se ha cancelado el partido del día ${partidos[i].fechaPartido}",
+                                              widget.emails);
+
+                                          Navigator.pop(context);
+                                          const snackBar = SnackBar(
+                                            content: Text('Partido anulado'),
+                                          );
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(snackBar);
+                                        } on FirebaseException catch (e) {
+                                          const snackBar = SnackBar(
+                                            content:
+                                                Text('Error anulando partido'),
+                                          );
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(snackBar);
+                                        }
                                         // Navigator.push(
                                         //   context,
                                         //   MaterialPageRoute(
@@ -224,17 +313,24 @@ class _AdminPartidosState extends State<AdminPartidos> {
                             ),
                           if (partidos[i]
                                   .fechaPartido
-                                  .compareTo(DateTime.now()) >
+                                  .compareTo(DateTime.now()) >=
                               0)
                             ElevatedButton(
-                              onPressed: (() async => {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              const AdminPartidos()),
-                                    )
-                                  }),
+                              onPressed: () {
+                                //crearEstadisticasAleatorias(widget.emails);
+                                try {
+                                  generarEquiposAleatorios(
+                                      widget.emails, partidos[i].fechaPartido);
+                                } on FirebaseException catch (e) {
+                                  print(e.message);
+                                }
+                                const snackBar = SnackBar(
+                                  content:
+                                      Text('Equipos generados correctamente'),
+                                );
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(snackBar);
+                              },
                               style: ElevatedButton.styleFrom(
                                   textStyle: const TextStyle(
                                       fontSize: 10,

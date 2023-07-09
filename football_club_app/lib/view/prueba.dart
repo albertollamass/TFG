@@ -20,7 +20,7 @@ class Prueba extends StatelessWidget {
           } else if (snapshot.hasData){
             return const Home();           
           } else {
-            return const LogIn();
+            return LogIn(credencialesErroneas: false,);
           }
         },
       ),

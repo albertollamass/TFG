@@ -82,11 +82,13 @@ class _NotificacionesState extends State<Notificaciones> {
               ),
             ),
             Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(
-                "${notificacion.asunto}",
-                style:
-                    const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
+              SizedBox(
+                  width: 150,
+                  child: Text(
+                    "${notificacion.asunto}",
+                    style: const TextStyle(
+                        fontSize: 20, fontWeight: FontWeight.bold),
+                  )),
               Text(
                 weekdayToString(notificacion.fechaEnvio?.weekday) +
                     " " +
@@ -132,12 +134,13 @@ class _NotificacionesState extends State<Notificaciones> {
           ],
         ),
         onTap: () {
-          var idNoti = ((notificacion.fechaEnvio?.microsecondsSinceEpoch)! / 1000).truncate();
+          var idNoti =
+              ((notificacion.fechaEnvio?.microsecondsSinceEpoch)! / 1000)
+                  .truncate();
           FirebaseFirestore.instance
               .collection('notificaciones')
-              .doc(idNoti.toString()).update({
-                'leida' : true
-          });
+              .doc(idNoti.toString())
+              .update({'leida': true});
 
           Navigator.push(
             context,
@@ -172,28 +175,34 @@ class _NotificacionesState extends State<Notificaciones> {
                         style: TextStyle(color: Colors.black),
                       ),
                       onPressed: () {
-                        var si = FirebaseFirestore.instance
-                          .collection('notificaciones')
-                          .where("receptor", isEqualTo: usuarioActivo?.email.toString()).snapshots();
+                        try {
+                          var notificacionesSocio = FirebaseFirestore.instance
+                              .collection('notificaciones')
+                              .where("receptor",
+                                  isEqualTo: usuarioActivo?.email.toString())
+                              .snapshots();
 
-                        si.forEach((element) {
-                          element.docs.forEach((element) {
-                            FirebaseFirestore.instance
-                          .collection('notificaciones').doc(element.id).delete();
+                          notificacionesSocio.forEach((element) {
+                            for (var element in element.docs) {
+                              FirebaseFirestore.instance
+                                  .collection('notificaciones')
+                                  .doc(element.id)
+                                  .delete();
+                            }
                           });
-                        });
+                          const snackBar = SnackBar(
+                            content: Text('Se han borrado tus notificaciones'),
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                        } on Exception catch (e) {
+                          const snackBar = SnackBar(
+                            content: Text('Error borrando notificaciones'),
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                        }
 
                         Navigator.pop(context);
-                        Navigator.pop(context);
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => Notificaciones(
-                                    esAdmin: widget.esAdmin,
-                                    emailSocios: [],
-                                    selectedItems: [],
-                                  )),
-                        );
+                        Navigator.pop(context);                        
                       },
                     ),
                     TextButton(
@@ -222,13 +231,34 @@ class _NotificacionesState extends State<Notificaciones> {
             color: const Color(0xffffffff),
           ),
           child: StreamBuilder<List<Notificacion>>(
-            stream: leerNotificacionesSocio(usuarioActivo!.email.toString()),
+            stream: leerNotificacionesSocio(usuarioActivo?.email.toString()),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 final notificaciones = snapshot.data;
-                return ListView(
-                  children: notificaciones!.map(buildNotificacion).toList(),
-                );
+
+                if (notificaciones!.isEmpty) {
+                  return Center(
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                        Icon(
+                          Icons.notifications_none,
+                          size: 60,
+                        ),
+                        SizedBox(
+                          height: 40,
+                        ),
+                        Text(
+                          "NO HAY NOTIFICACIONES",
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
+                      ]));
+                } else {
+                  return ListView(
+                    children: notificaciones.map(buildNotificacion).toList(),
+                  );
+                }
               } else if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(
                   child: CircularProgressIndicator(),
@@ -237,11 +267,11 @@ class _NotificacionesState extends State<Notificaciones> {
                 return Center(
                   child: Text("Error" + snapshot.hasError.toString()),
                 );
-              } else {
-                return const Center(
-                  child: Text("NO HAY NOTIFICACIONES"),
-                );
               }
+              print("Aqui");
+              return const Center(
+                child: Text("NO HAY NOTIFICACIONES"),
+              );
             },
           ),
         )),
@@ -305,28 +335,37 @@ class _NotificacionesState extends State<Notificaciones> {
                             onPressed: () {
                               //selectedItems, asuntoController, descripcionController
                               widget.emailSocios.clear();
-                              print(widget.selectedItems.toString() +
-                                  "esta aqui " +
-                                  widget.emailSocios.toString());
                               for (int i = 0; i < sociosOut.length; i++) {
                                 for (int j = 0;
                                     j < widget.selectedItems.length;
                                     j++) {
                                   if (sociosOut[i].nombre ==
                                       widget.selectedItems[j]) {
-                                    print("${sociosOut[i].nombre}\n");
                                     widget.emailSocios
                                         .add(sociosOut[i].email.toString());
                                   }
                                 }
                               }
                               sociosOut.clear();
-                              print(
-                                  "${sociosOut.length} length socios pre env");
-                              enviarNotificacion(
-                                  asuntoController.text.trim(),
-                                  descripcionController.text.trim(),
-                                  widget.emailSocios);
+                              try {
+                                enviarNotificacion(
+                                    asuntoController.text.trim(),
+                                    descripcionController.text.trim(),
+                                    widget.emailSocios);
+                                const snackBar = SnackBar(
+                                  content: Text(
+                                      'Notificacion enviada correctamente'),
+                                );
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(snackBar);
+                              } on FirebaseException catch (e) {
+                                // TODO
+                                const snackBar = SnackBar(
+                                  content: Text('Error enviando notificacion'),
+                                );
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(snackBar);
+                              }
                               setState(() {
                                 widget.emailSocios = [];
                                 widget.selectedItems = [];

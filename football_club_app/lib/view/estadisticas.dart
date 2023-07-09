@@ -24,14 +24,14 @@ class _EstadisticasWState extends State<EstadisticasW> {
           width: 30,
           child: Text(
             "Pos",
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
           ),
         ),
         const SizedBox(
           width: 70,
           child: Text(
             "Jugador",
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
           ),
         ),
         Container(
@@ -39,7 +39,7 @@ class _EstadisticasWState extends State<EstadisticasW> {
           alignment: Alignment.center,
           child: const Text(
             "Goles",
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
           ),
         ),
       ]));
@@ -60,7 +60,7 @@ class _EstadisticasWState extends State<EstadisticasW> {
                       child: Text(
                         (x + 1).toString(),
                         style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w300),
+                            fontSize: 14, fontWeight: FontWeight.w300),
                       ),
                     ),
                     SizedBox(
@@ -70,7 +70,7 @@ class _EstadisticasWState extends State<EstadisticasW> {
                             ? user.alias.toString()
                             : (user.nombre.toString()),
                         style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w300),
+                            fontSize: 14, fontWeight: FontWeight.w300),
                       ),
                     ),
                     Container(
@@ -79,7 +79,7 @@ class _EstadisticasWState extends State<EstadisticasW> {
                       child: Text(
                         clasificacion[x].goles.toString(),
                         style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w300),
+                            fontSize: 14, fontWeight: FontWeight.w300),
                       ),
                     ),
                   ],
@@ -87,7 +87,7 @@ class _EstadisticasWState extends State<EstadisticasW> {
               } else if (snapshot.hasError) {
                 return Text(snapshot.error.toString());
               } else {
-                return Text("no data");
+                return const Text("");
               }
             }));
         mywidgets.add(const Divider());
@@ -108,14 +108,14 @@ class _EstadisticasWState extends State<EstadisticasW> {
           width: 30,
           child: Text(
             "Pos",
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
           ),
         ),
         const SizedBox(
           width: 70,
           child: Text(
             "Jugador",
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
           ),
         ),
         Container(
@@ -123,7 +123,7 @@ class _EstadisticasWState extends State<EstadisticasW> {
           alignment: Alignment.center,
           child: const Text(
             "Puntos",
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
           ),
         ),
         Container(
@@ -131,7 +131,7 @@ class _EstadisticasWState extends State<EstadisticasW> {
           alignment: Alignment.center,
           child: const Text(
             "PJ",
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
           ),
         ),
       ]));
@@ -152,7 +152,7 @@ class _EstadisticasWState extends State<EstadisticasW> {
                       child: Text(
                         (x + 1).toString(),
                         style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w300),
+                            fontSize: 14, fontWeight: FontWeight.w300),
                       ),
                     ),
                     SizedBox(
@@ -162,7 +162,7 @@ class _EstadisticasWState extends State<EstadisticasW> {
                             ? user.alias.toString()
                             : (user.nombre.toString()),
                         style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w300),
+                            fontSize: 14, fontWeight: FontWeight.w300),
                       ),
                     ),
                     Container(
@@ -171,7 +171,7 @@ class _EstadisticasWState extends State<EstadisticasW> {
                       child: Text(
                         clasificacion[x].puntos.toString(),
                         style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w300),
+                            fontSize: 14, fontWeight: FontWeight.w300),
                       ),
                     ),
                     Container(
@@ -180,7 +180,7 @@ class _EstadisticasWState extends State<EstadisticasW> {
                       child: Text(
                         clasificacion[x].partidosJugados.toString(),
                         style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w300),
+                            fontSize: 14, fontWeight: FontWeight.w300),
                       ),
                     ),
                   ],
@@ -188,7 +188,7 @@ class _EstadisticasWState extends State<EstadisticasW> {
               } else if (snapshot.hasError) {
                 return Text(snapshot.error.toString());
               } else {
-                return Text("no data");
+                return const Text("");
               }
             }));
         mywidgets.add(const Divider());
@@ -209,14 +209,14 @@ class _EstadisticasWState extends State<EstadisticasW> {
           width: 30,
           child: Text(
             "Pos",
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
           ),
         ),
         const SizedBox(
           width: 70,
           child: Text(
             "Jugador",
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
           ),
         ),
         Container(
@@ -224,7 +224,7 @@ class _EstadisticasWState extends State<EstadisticasW> {
           alignment: Alignment.center,
           child: const Text(
             "Goles",
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
           ),
         ),
         Container(
@@ -232,7 +232,7 @@ class _EstadisticasWState extends State<EstadisticasW> {
           alignment: Alignment.center,
           child: const Text(
             "PJ",
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
           ),
         ),
       ]));
@@ -253,7 +253,7 @@ class _EstadisticasWState extends State<EstadisticasW> {
                       child: Text(
                         (x + 1).toString(),
                         style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w300),
+                            fontSize: 14, fontWeight: FontWeight.w300),
                       ),
                     ),
                     SizedBox(
@@ -263,7 +263,7 @@ class _EstadisticasWState extends State<EstadisticasW> {
                             ? user.alias.toString()
                             : (user.nombre.toString()),
                         style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w300),
+                            fontSize: 14, fontWeight: FontWeight.w300),
                       ),
                     ),
                     Container(
@@ -272,7 +272,7 @@ class _EstadisticasWState extends State<EstadisticasW> {
                       child: Text(
                         clasificacion[x].goles.toString(),
                         style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w300),
+                            fontSize: 14, fontWeight: FontWeight.w300),
                       ),
                     ),
                     Container(
@@ -281,7 +281,7 @@ class _EstadisticasWState extends State<EstadisticasW> {
                       child: Text(
                         clasificacion[x].partidosJugados.toString(),
                         style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w300),
+                            fontSize: 14, fontWeight: FontWeight.w300),
                       ),
                     ),
                   ],
@@ -289,7 +289,7 @@ class _EstadisticasWState extends State<EstadisticasW> {
               } else if (snapshot.hasError) {
                 return Text(snapshot.error.toString());
               } else {
-                return Text("no data");
+                return const Text("");
               }
             }));
         mywidgets.add(const Divider());

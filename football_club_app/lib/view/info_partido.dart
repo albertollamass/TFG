@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:football_club_app/model/partido.dart';
-import 'package:football_club_app/view/highlights_partido.dart';
 import 'package:football_club_app/view/resumen_partido.dart';
 
 class InfoPartido extends StatefulWidget {

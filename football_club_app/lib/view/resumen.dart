@@ -24,12 +24,12 @@ class _ResumenState extends State<Resumen> {
         return b.goles.compareTo(a.goles);
       });
 
-      mywidgets.add(Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+      mywidgets.add(Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
         const SizedBox(
           width: 35,
           child: Text(
             "Pos",
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
           ),
         ),
         const SizedBox(
@@ -39,7 +39,7 @@ class _ResumenState extends State<Resumen> {
           width: 70,
           child: Text(
             "Jugador",
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
           ),
         ),
         Container(
@@ -47,7 +47,7 @@ class _ResumenState extends State<Resumen> {
           alignment: Alignment.center,
           child: const Text(
             "PJ",
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
           ),
         ),
         Container(
@@ -55,7 +55,7 @@ class _ResumenState extends State<Resumen> {
           alignment: Alignment.center,
           child: const Text(
             "PG",
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
           ),
         ),
         Container(
@@ -63,7 +63,7 @@ class _ResumenState extends State<Resumen> {
           alignment: Alignment.center,
           child: const Text(
             "PP",
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
           ),
         ),
         Container(
@@ -71,7 +71,7 @@ class _ResumenState extends State<Resumen> {
           alignment: Alignment.center,
           child: const Text(
             "PE",
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
           ),
         ),
         Container(
@@ -79,7 +79,7 @@ class _ResumenState extends State<Resumen> {
           alignment: Alignment.center,
           child: const Text(
             "Pts",
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
           ),
         ),
       ]));
@@ -94,14 +94,14 @@ class _ResumenState extends State<Resumen> {
             if (snapshot.hasData) {
               final stats = snapshot.data!;
               return Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   SizedBox(
                     width: 30,
                     child: Text(
                       (x + 1).toString(),
                       style: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.w300),
+                          fontSize: 14, fontWeight: FontWeight.w300),
                     ),
                   ),
                   const SizedBox(
@@ -114,7 +114,7 @@ class _ResumenState extends State<Resumen> {
                           ? stats.alias.toString()
                           : (stats.nombre.toString()),
                       style: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.w300),
+                          fontSize: 14, fontWeight: FontWeight.w300),
                     ),
                   ),
                   Container(
@@ -123,7 +123,7 @@ class _ResumenState extends State<Resumen> {
                     child: Text(
                       jugadores[x].partidosJugados.toString(),
                       style: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.w300),
+                          fontSize: 14, fontWeight: FontWeight.w300),
                     ),
                   ),
                   Container(
@@ -132,7 +132,7 @@ class _ResumenState extends State<Resumen> {
                     child: Text(
                       jugadores[x].partidosGanados.toString(),
                       style: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.w300),
+                          fontSize: 14, fontWeight: FontWeight.w300),
                     ),
                   ),
                   Container(
@@ -141,7 +141,7 @@ class _ResumenState extends State<Resumen> {
                     child: Text(
                       jugadores[x].partidosPerdidos.toString(),
                       style: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.w300),
+                          fontSize: 14, fontWeight: FontWeight.w300),
                     ),
                   ),
                   Container(
@@ -150,7 +150,7 @@ class _ResumenState extends State<Resumen> {
                     child: Text(
                       jugadores[x].partidosPerdidos.toString(),
                       style: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.w300),
+                          fontSize: 14, fontWeight: FontWeight.w300),
                     ),
                   ),
                   Container(
@@ -159,7 +159,7 @@ class _ResumenState extends State<Resumen> {
                     child: Text(
                       jugadores[x].puntos.toString(),
                       style: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.w300),
+                          fontSize: 14, fontWeight: FontWeight.w300),
                     ),
                   ),
                 ],
@@ -241,11 +241,11 @@ class _ResumenState extends State<Resumen> {
                                       border: Border.all(
                                           width: 2, color: Colors.white))),
                               Text(
-                                partidos[i].golesNegro.toString(),
+                                partidos[i].yaEditado ? partidos[i].golesNegro.toString() : "",
                                 style: const TextStyle(fontSize: 35),
                               ),
                               const Text(" - ", style: TextStyle(fontSize: 35)),
-                              Text(partidos[i].golesBlanco.toString(),
+                              Text(partidos[i].yaEditado ? partidos[i].golesBlanco.toString() : "",
                                   style: const TextStyle(fontSize: 35)),
                               Container(
                                   margin:
@@ -266,7 +266,7 @@ class _ResumenState extends State<Resumen> {
                 children: partidosW,
               );
             } else {
-              return const Text("no data");
+              return const CircularProgressIndicator();
             }
           },
         ),
@@ -309,7 +309,7 @@ class _ResumenState extends State<Resumen> {
                     children: buildClasificacion(socios),
                   );
                 } else {
-                  return Text("error");
+                  return const CircularProgressIndicator();
                 }
               },
             ))

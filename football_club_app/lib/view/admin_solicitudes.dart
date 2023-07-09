@@ -45,7 +45,10 @@ class _AdminSolicitudesState extends State<AdminSolicitudes> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => DatosPersonales(socio: socio, esSolicitud: true,)),
+                      builder: (context) => DatosPersonales(
+                            socio: socio,
+                            esSolicitud: true,
+                          )),
                 );
               },
               child: Text(
@@ -132,19 +135,47 @@ class _AdminSolicitudesState extends State<AdminSolicitudes> {
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               final socios = snapshot.data!;
-              return Center(
-                  child: Container(
-                height: 780,
-                width: 370,
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: const Color(0xffffffff),
-                ),
-                child: ListView(
-                  children: socios.map(buildSocio).toList(),
-                ),
-              ));
+              if (socios.isEmpty) {
+                return Center(
+                    child: Container(
+                        height: 780,
+                        width: 370,
+                        padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: const Color(0xffffffff),
+                        ),
+                        child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: const [
+                              Icon(
+                                Icons.person_pin_outlined,
+                                size: 60,
+                              ),
+                              SizedBox(
+                                height: 40,
+                              ),
+                              Text(
+                                "NO HAY SOLICITUDES",
+                                style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.bold),
+                              ),
+                            ])));
+              } else {
+                return Center(
+                    child: Container(
+                  height: 780,
+                  width: 370,
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: const Color(0xffffffff),
+                  ),
+                  child: ListView(
+                    children: socios.map(buildSocio).toList(),
+                  ),
+                ));
+              }
             } else {
               return const Text("error");
             }

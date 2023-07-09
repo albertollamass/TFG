@@ -15,19 +15,6 @@ class Equipo {
     required this.jugadores,
   });
 
-  
-
-  Equipo copyWith({
-    String? color,
-    DateTime? fechaEquipo,
-    List<String>? jugadores,
-  }) {
-    return Equipo(
-      color: color ?? this.color,
-      fechaEquipo: fechaEquipo ?? this.fechaEquipo,
-      jugadores: jugadores ?? this.jugadores,
-    );
-  }
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
@@ -52,16 +39,4 @@ class Equipo {
   @override
   String toString() => 'Equipo(color: $color, fechaEquipo: $fechaEquipo, jugadores: $jugadores)';
 
-  @override
-  bool operator ==(covariant Equipo other) {
-    if (identical(this, other)) return true;
-  
-    return 
-      other.color == color &&
-      other.fechaEquipo == fechaEquipo &&
-      listEquals(other.jugadores, jugadores);
-  }
-
-  @override
-  int get hashCode => color.hashCode ^ fechaEquipo.hashCode ^ jugadores.hashCode;
 }

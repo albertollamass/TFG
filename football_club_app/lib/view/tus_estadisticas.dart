@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:football_club_app/controller/controlador.dart';
 import 'package:football_club_app/model/carta.dart';
 import 'package:football_club_app/view/home.dart';
@@ -35,7 +36,7 @@ class _TusEstadisticasState extends State<TusEstadisticas> {
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
           ),
           centerTitle: true,
-          elevation: 0,          
+          elevation: 0,
         ),
         backgroundColor: const Color(0xff2B4EA1),
         body: Center(
@@ -58,39 +59,46 @@ class _TusEstadisticasState extends State<TusEstadisticas> {
                               return const Center(
                                 child: Text("nono"),
                               );
-                            } else {
+                            } else {                              
                               return Column(
                                 //alignment: Alignment.bottomCenter,
                                 children: [
+                                  Container(
+                                      // color: Colors.amber,
+                                      padding: const EdgeInsets.fromLTRB(
+                                          40, 30, 40, 0),
+                                      alignment: Alignment.centerRight,
+                                      height: 450,
+                                      width:
+                                          screenWidth > 430 ? 500 : screenWidth,
+                                      child: Center(
+                                        child: Hexagon(
+                                          screenWidth: screenWidth > 430
+                                              ? 430
+                                              : screenWidth / 1.25,
+                                          jugador: jugador,
+                                        ),
+                                      )),
                                   Container(
                                     // color: Colors.amber,
                                     padding: const EdgeInsets.fromLTRB(
                                         40, 30, 40, 0),
                                     alignment: Alignment.centerRight,
-                                    height: 400,
-                                    width: screenWidth,
-                                    child: Hexagon(
-                                      screenWidth: screenWidth / 1.25,
-                                      jugador: jugador,
-                                    ),
-                                  ),
-                                  Container(
-                                    // color: Colors.amber,
-                                    padding: const EdgeInsets.fromLTRB(
-                                        50, 30, 40, 0),
-                                    alignment: Alignment.centerRight,
                                     height: 500,
                                     width: screenWidth,
-                                    child: Column(
-                                      children: buildStats(jugador, context,
-                                          usuarioActivo.toString()),
+                                    child: Center(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: buildStats(jugador, context,
+                                            usuarioActivo.toString()),
+                                      ),
                                     ),
                                   )
                                 ],
                               );
                             }
-                          } else {
-                            print(snapshot.error.toString());
+                          } else {                            
                             return const Center(
                               child: CircularProgressIndicator(),
                             );
@@ -104,7 +112,7 @@ class _TusEstadisticasState extends State<TusEstadisticas> {
 List<Widget> buildStats(
     Carta carta, BuildContext context, String usuarioActivo) {
   List<Widget> ratingRow = [];
-
+  final screenWidth = MediaQuery.of(context).size.width;
   final jugador = [
     Rating("RITMO", carta.ritmo),
     Rating("TIRO", carta.tiro),
@@ -126,9 +134,13 @@ List<Widget> buildStats(
   final ButtonStyle styleInic = ElevatedButton.styleFrom(
       textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
       backgroundColor: const Color(0xff3C3577),
-      padding: const EdgeInsets.fromLTRB(30.0, 16.0, 30.0, 16.0));
+      padding: const EdgeInsets.fromLTRB(30.0, 16.0, 30.0, 16.0),
+      fixedSize: Size.fromWidth(screenWidth > 430 ? 500 : screenWidth));
   for (int i = 0; i < 6; i += 2) {
-    ratingRow.add(Row(children: [
+    ratingRow.add(Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
       SizedBox(
           width: 80,
           child: Text(
@@ -142,10 +154,14 @@ List<Widget> buildStats(
         width: 20,
       ),
       SizedBox(
-        width: 20,
+        width: 22,
         child: TextFormField(
           controller: controladores[i],
-          maxLength: 2,
+          inputFormatters: <TextInputFormatter>[
+            FilteringTextInputFormatter.digitsOnly,
+            LengthLimitingTextInputFormatter(2)
+          ],
+          keyboardType: TextInputType.number,
         ),
       ),
       const SizedBox(
@@ -161,13 +177,17 @@ List<Widget> buildStats(
                 fontSize: 16),
           )),
       const SizedBox(
-        width: 20,
+        width: 10,
       ),
       SizedBox(
         width: 20,
         child: TextFormField(
           controller: controladores[i + 1],
-          maxLength: 2,
+          inputFormatters: <TextInputFormatter>[
+            FilteringTextInputFormatter.digitsOnly,
+            LengthLimitingTextInputFormatter(2)
+          ],
+          keyboardType: TextInputType.number,
         ),
       )
     ]));

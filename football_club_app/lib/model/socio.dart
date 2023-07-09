@@ -24,38 +24,6 @@ class Socio {
   }
   );
 
-  String? getNombre() {
-    return nombre;
-  }
-
-  String? getApellidos() {
-    return apellidos;
-  }
-  
-  String? getEmail() {
-    return email;
-  }
-
-  int? getTelefono() {
-    return telefono;
-  }
-
-  String? getPassword() {
-    return password;
-  }
-
-  int? getSaldo() {
-    return saldo;
-  }
-
-  setNombre(String nombre){
-    this.nombre = nombre;
-  }
-
-  setSaldo(int saldo){
-    this.saldo = saldo;
-  }
-
   Socio.fromJson(Map<String, dynamic> json)
   : nombre = json['nombre'] as String,
     apellidos = json['apellidos'] as String,

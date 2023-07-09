@@ -12,7 +12,7 @@ class Register extends StatefulWidget {
 }
 
 class _RegisterState extends State<Register> {
-  bool recordarCredenciales = false;
+  bool aceptarPoliticas = false;
   final nameController = TextEditingController();
   final surnameController = TextEditingController();
   final emailController = TextEditingController();
@@ -120,14 +120,14 @@ class _RegisterState extends State<Register> {
                 title: const Text(
                     style: TextStyle(),
                     textAlign: TextAlign.justify,
-                    "Para completar tu registro, debes aceptar los Términos de Uso y el procesamiento y tratamiento de tus datos personales conforme a lo dispuesto en las Políticas de Privacidad."),
+                    "Para completar tu registro, debes aceptar los Términos de Uso y el procesamiento y tratamiento de tus datos personales."),
                 controlAffinity: ListTileControlAffinity.leading,
-                value: recordarCredenciales,
+                value: aceptarPoliticas,
                 activeColor: Colors.blueGrey,
                 tristate: false,
                 onChanged: (newBool) {
                   setState(() {
-                    recordarCredenciales = newBool!;
+                    aceptarPoliticas = newBool!;
                   });
                 },
               ),
@@ -139,7 +139,7 @@ class _RegisterState extends State<Register> {
                       "**Debes marcar esta casilla para poder registrarte",
                       style: TextStyle(fontSize: 16, color: Colors.red[400]),
                     )
-                  : const Text(""),
+                  : const SizedBox(),
               widget.privacidad
                   ? const SizedBox(
                       height: 20,
@@ -155,7 +155,7 @@ class _RegisterState extends State<Register> {
               ),
               ElevatedButton(
                 onPressed: (() async => {
-                      if (recordarCredenciales)
+                      if (aceptarPoliticas && (nameController.text.trim() != "" && surnameController.text.trim() != "" && emailController.text.trim() != "" && passwdController.text.trim() != "" && comprobarPass(passwdController.text.trim(), cpasswdController.text.trim())))
                         {
                           crearSolicitud(
                             nameController.text,
@@ -172,7 +172,7 @@ class _RegisterState extends State<Register> {
                                 builder: (context) => const LogRegister()),
                           )
                         }
-                      else
+                      else if (!aceptarPoliticas)
                         {
                           // Navigator.push(
                           // context,
@@ -184,6 +184,8 @@ class _RegisterState extends State<Register> {
                               widget.privacidad = true;
                             },
                           )
+                        } else if (!comprobarPass(passwdController.text.trim(), cpasswdController.text.trim())){
+
                         }
                     }),
                 style: styleInic,

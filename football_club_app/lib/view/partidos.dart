@@ -55,11 +55,11 @@ class _PartidosState extends State<Partidos> {
                       borderRadius: BorderRadius.circular(100),
                       border: Border.all(width: 2, color: Colors.white))),
               Text(
-                partido.golesNegro.toString(),
+                partido.yaEditado ? partido.golesNegro.toString() : "",
                 style: const TextStyle(fontSize: 35),
               ),
               const Text(" - ", style: TextStyle(fontSize: 35)),
-              Text(partido.golesBlanco.toString(),
+              Text(partido.yaEditado ? partido.golesBlanco.toString() : "",
                   style: const TextStyle(fontSize: 35)),
               Container(
                   margin: const EdgeInsets.fromLTRB(7, 10, 40, 10),
@@ -91,10 +91,10 @@ class _PartidosState extends State<Partidos> {
       stream: leerPartidos(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          final partidos = snapshot.data;
+          final partidos = snapshot.data!.reversed;
           return ListView(
             padding: const EdgeInsets.all(20),
-            children: partidos!.map(buildPartido).toList(),
+            children: partidos.map(buildPartido).toList(),
           );
         } else {
           return Text(snapshot.error.toString());

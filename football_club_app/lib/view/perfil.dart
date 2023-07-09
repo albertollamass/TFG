@@ -1,12 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:football_club_app/controller/controlador.dart';
-import 'package:football_club_app/model/equipo.dart';
 import 'package:football_club_app/view/admin_pagos.dart';
 import 'package:football_club_app/view/admin_partidos.dart';
 import 'package:football_club_app/view/admin_solicitudes.dart';
 import 'package:football_club_app/view/admin_usuarios.dart';
-import 'package:football_club_app/view/log_register.dart';
 import 'package:football_club_app/view/notificaciones.dart';
 import 'package:football_club_app/view/tus_estadisticas.dart';
 
@@ -22,6 +20,7 @@ class Perfil extends StatefulWidget {
 }
 
 class _PerfilState extends State<Perfil> {
+  List<String> emails = [];
   @override
   Widget build(BuildContext context) {
     final usuarioActivo = FirebaseAuth.instance.currentUser?.email;
@@ -54,8 +53,7 @@ class _PerfilState extends State<Perfil> {
                 future: leerSocio(usuarioActivo.toString()),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
-                    final user = snapshot.data;
-                    print("en");
+                    final user = snapshot.data;                    
                     if (user == null) {
                       return const Center(
                         child: Text("nono"),
@@ -63,6 +61,22 @@ class _PerfilState extends State<Perfil> {
                     } else {
                       return Column(
                         children: [
+                          StreamBuilder<List<Socio>>(
+                            stream: leerSocios(),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                final socios = snapshot.data!;
+                                for (int i = 0; i < socios.length; i++) {
+                                  emails.add(socios[i].email.toString());
+                                }
+                                return const SizedBox();
+                              } else {                                
+                                return const SizedBox(
+                                  height: 0,
+                                );
+                              }
+                            },
+                          ),
                           Container(
                             margin: const EdgeInsets.all(20),
                             padding: const EdgeInsets.all(10),
@@ -124,16 +138,16 @@ class _PerfilState extends State<Perfil> {
                                       SizedBox(
                                         width: 20,
                                       ),
-                                      Text(
-                                        "Datos personales",
-                                        style: TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.w500,
-                                            color: Color.fromARGB(
-                                                255, 72, 72, 75)),
-                                      ),
                                       SizedBox(
-                                        width: 80,
+                                        width: 235,
+                                        child: Text(
+                                          "Datos personales",
+                                          style: TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.w500,
+                                              color: Color.fromARGB(
+                                                  255, 72, 72, 75)),
+                                        ),
                                       ),
                                       Icon(
                                         Icons.arrow_forward,
@@ -166,16 +180,16 @@ class _PerfilState extends State<Perfil> {
                                       SizedBox(
                                         width: 20,
                                       ),
-                                      Text(
-                                        "Notificaciones",
-                                        style: TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.w500,
-                                            color: Color.fromARGB(
-                                                255, 72, 72, 75)),
-                                      ),
                                       SizedBox(
-                                        width: 107,
+                                        width: 235,
+                                        child: Text(
+                                          "Notificaciones",
+                                          style: TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.w500,
+                                              color: Color.fromARGB(
+                                                  255, 72, 72, 75)),
+                                        ),
                                       ),
                                       Icon(
                                         Icons.arrow_forward,
@@ -209,16 +223,16 @@ class _PerfilState extends State<Perfil> {
                                       SizedBox(
                                         width: 20,
                                       ),
-                                      Text(
-                                        "Modificar estadísticas",
-                                        style: TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.w500,
-                                            color: Color.fromARGB(
-                                                255, 72, 72, 75)),
-                                      ),
                                       SizedBox(
-                                        width: 35,
+                                        width: 235,
+                                        child: Text(
+                                          "Modificar estadisticas",
+                                          style: TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.w500,
+                                              color: Color.fromARGB(
+                                                  255, 72, 72, 75)),
+                                        ),
                                       ),
                                       Icon(
                                         Icons.arrow_forward,
@@ -284,16 +298,16 @@ class _PerfilState extends State<Perfil> {
                                           SizedBox(
                                             width: 20,
                                           ),
-                                          Text(
-                                            "Solicitudes",
-                                            style: TextStyle(
-                                                fontSize: 20,
-                                                fontWeight: FontWeight.w500,
-                                                color: Color.fromARGB(
-                                                    255, 72, 72, 75)),
-                                          ),
                                           SizedBox(
-                                            width: 135,
+                                            width: 235,
+                                            child: Text(
+                                              "Solicitudes",
+                                              style: TextStyle(
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.w500,
+                                                  color: Color.fromARGB(
+                                                      255, 72, 72, 75)),
+                                            ),
                                           ),
                                           Icon(
                                             Icons.arrow_forward,
@@ -323,16 +337,16 @@ class _PerfilState extends State<Perfil> {
                                           SizedBox(
                                             width: 20,
                                           ),
-                                          Text(
-                                            "Socios",
-                                            style: TextStyle(
-                                                fontSize: 20,
-                                                fontWeight: FontWeight.w500,
-                                                color: Color.fromARGB(
-                                                    255, 72, 72, 75)),
-                                          ),
                                           SizedBox(
-                                            width: 175,
+                                            width: 235,
+                                            child: Text(
+                                              "Socios",
+                                              style: TextStyle(
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.w500,
+                                                  color: Color.fromARGB(
+                                                      255, 72, 72, 75)),
+                                            ),
                                           ),
                                           Icon(
                                             Icons.arrow_forward,
@@ -362,16 +376,16 @@ class _PerfilState extends State<Perfil> {
                                           SizedBox(
                                             width: 20,
                                           ),
-                                          Text(
-                                            "Partidos",
-                                            style: TextStyle(
-                                                fontSize: 20,
-                                                fontWeight: FontWeight.w500,
-                                                color: Color.fromARGB(
-                                                    255, 72, 72, 75)),
-                                          ),
                                           SizedBox(
-                                            width: 160,
+                                            width: 235,
+                                            child: Text(
+                                              "Partidos",
+                                              style: TextStyle(
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.w500,
+                                                  color: Color.fromARGB(
+                                                      255, 72, 72, 75)),
+                                            ),
                                           ),
                                           Icon(
                                             Icons.arrow_forward,
@@ -379,38 +393,12 @@ class _PerfilState extends State<Perfil> {
                                             color: Color(0xff94949C),
                                           )
                                         ]),
-                                        onTap: () {
-                                          Equipo equipo1 = Equipo(
-                                              color: "negro",
-                                              fechaEquipo: DateTime(2023, 6, 30),
-                                              jugadores: [
-                                                "Antonio@gmail.com",
-                                                "Joaquin@gmail.com",
-                                                "M.Pardo@gmail.com",
-                                                "Sergio@gmail.com",
-                                                "Francis@gmail.com",
-                                                "Victor@gmail.com"
-                                              ]);
-                                          Equipo equipo2 = Equipo(
-                                              color: "blanco",
-                                              fechaEquipo: DateTime(2023, 6, 30),
-                                              jugadores: [
-                                                "rafa@gmail.com",
-                                                "jose@gmail.com",
-                                                "Juanjo@gmail.com",
-                                                "Nene@gmail.com",
-                                                "Sam@gmail.com",
-                                                "Joseles@gmail.com",
-                                              ]);
-                                          //crearEquipo([]);
-                                          //crearPartido(equipo1.fechaEquipo,
-                                              //equipo1, equipo2);
-
+                                        onTap: () {                                                                                    
                                           Navigator.push(
                                             context,
                                             MaterialPageRoute(
                                                 builder: (context) =>
-                                                    const AdminPartidos()),
+                                                    AdminPartidos(emails: emails,)),
                                           );
                                         },
                                       ),
@@ -427,16 +415,16 @@ class _PerfilState extends State<Perfil> {
                                           SizedBox(
                                             width: 20,
                                           ),
-                                          Text(
-                                            "Transacciones",
-                                            style: TextStyle(
-                                                fontSize: 20,
-                                                fontWeight: FontWeight.w500,
-                                                color: Color.fromARGB(
-                                                    255, 72, 72, 75)),
-                                          ),
                                           SizedBox(
-                                            width: 80,
+                                            width: 235,
+                                            child: Text(
+                                              "Transacciones",
+                                              style: TextStyle(
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.w500,
+                                                  color: Color.fromARGB(
+                                                      255, 72, 72, 75)),
+                                            ),
                                           ),
                                           Icon(
                                             Icons.arrow_forward,
@@ -575,8 +563,7 @@ class _PerfilState extends State<Perfil> {
                         ],
                       );
                     }
-                  } else {
-                    print(snapshot.error.toString());
+                  } else {                    
                     return const Center(
                       child: CircularProgressIndicator(),
                     );

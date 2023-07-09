@@ -22,51 +22,6 @@ class Estadisticas {
     required this.goles,
   });
 
-  setPartidosJugados(int pj){
-    partidosJugados = pj;
-  }
-
-  setPartidosPerdidos(int pp){
-    partidosPerdidos = pp;
-  }
-
-  setPartidosEmpatados(int pe){
-    partidosEmpatados = pe;
-  }
-
-  setPartidosGanados(int pg){
-    partidosGanados = pg;
-  }
-
-  setPuntos(int pts){
-    puntos = pts;
-  }
-
-  setGoles(int goles){
-    this.goles = goles;
-  }
-  
-
-
-  Estadisticas copyWith({
-    String? email,
-    int? partidosJugados,
-    int? partidosPerdidos,
-    int? partidosEmpatados,
-    int? partidosGanados,
-    int? puntos,
-    int? goles,
-  }) {
-    return Estadisticas(
-      email: email ?? this.email,
-      partidosJugados: partidosJugados ?? this.partidosJugados,
-      partidosPerdidos: partidosPerdidos ?? this.partidosPerdidos,
-      partidosEmpatados: partidosEmpatados ?? this.partidosEmpatados,
-      partidosGanados: partidosGanados ?? this.partidosGanados,
-      puntos: puntos ?? this.puntos,
-      goles: goles ?? this.goles,
-    );
-  }
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
@@ -99,30 +54,5 @@ class Estadisticas {
   @override
   String toString() {
     return 'Estadisticas(email: $email, partidosJugados: $partidosJugados, partidosPerdidos: $partidosPerdidos, partidosEmpatados: $partidosEmpatados, partidosGanados: $partidosGanados, puntos: $puntos, goles: $goles)';
-  }
-
-  @override
-  bool operator ==(covariant Estadisticas other) {
-    if (identical(this, other)) return true;
-  
-    return 
-      other.email == email &&
-      other.partidosJugados == partidosJugados &&
-      other.partidosPerdidos == partidosPerdidos &&
-      other.partidosEmpatados == partidosEmpatados &&
-      other.partidosGanados == partidosGanados &&
-      other.puntos == puntos &&
-      other.goles == goles;
-  }
-
-  @override
-  int get hashCode {
-    return email.hashCode ^
-      partidosJugados.hashCode ^
-      partidosPerdidos.hashCode ^
-      partidosEmpatados.hashCode ^
-      partidosGanados.hashCode ^
-      puntos.hashCode ^
-      goles.hashCode;
   }
 }

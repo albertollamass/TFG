@@ -10,8 +10,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../model/socio.dart';
 
 class LogIn extends StatefulWidget {
-  final bool credencialesErroneas;
-  const LogIn({
+  bool credencialesErroneas;
+  LogIn({
     Key? key,
     this.credencialesErroneas = false,
   }) : super(key: key);
@@ -25,6 +25,8 @@ class _LogInState extends State<LogIn> {
   bool? recordarCredenciales = false;
   TextEditingController correoController = TextEditingController();
   TextEditingController passwdController = TextEditingController();
+  final GlobalKey<FormState> _formKeyEm = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKeyPas = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -87,6 +89,7 @@ class _LogInState extends State<LogIn> {
               child:
                   Column(mainAxisAlignment: MainAxisAlignment.start, children: [
                 TextFormField(
+                  key: _formKeyEm,
                   controller: correoController,
                   validator: (val) {
                     if (val!.isEmpty) {
@@ -98,6 +101,7 @@ class _LogInState extends State<LogIn> {
                       icon: Icon(Icons.person), hintText: 'Correo electrónico'),
                 ),
                 TextFormField(
+                  key: _formKeyPas,
                   obscureText: !passwordVisible,
                   controller: passwdController,
                   validator: (value) {
@@ -120,10 +124,20 @@ class _LogInState extends State<LogIn> {
                         }),
                   ),
                 ),
-                Checkbox(
+                CheckboxListTile(
+                  title: const Text("Recordar credenciales"),
+                  controlAffinity: ListTileControlAffinity.leading,
                   value: recordarCredenciales,
                   activeColor: Colors.blueGrey,
                   onChanged: (bool? value) {
+                    recordarCredenciales = value;
+                    SharedPreferences.getInstance().then(
+                      (prefs) {
+                        prefs.setBool("remember_me", value!);
+                        prefs.setString('email', correoController.text);
+                        prefs.setString('password', passwdController.text);
+                      },
+                    );
                     setState(() {
                       recordarCredenciales = value;
                     });
@@ -138,6 +152,9 @@ class _LogInState extends State<LogIn> {
                             color: Colors.redAccent),
                         textAlign: TextAlign.center,
                       )
+                    : const Text(""),
+                widget.credencialesErroneas
+                    ? const SizedBox(height: 10,)
                     : const Text(""),
                 ElevatedButton(
                   onPressed: signIn,
@@ -172,16 +189,7 @@ class _LogInState extends State<LogIn> {
         );
 
   Future signIn() async {
-    // setState(() => isLoading = true),
-    //                     await Future.delayed(const Duration(seconds: 2)),
-    //                     setState(() => isLoading = false),
-    //                     Navigator.push(
-    //                       context,
-    //                       MaterialPageRoute(
-    //                           builder: (context) => const LogIn(
-    //                                 credencialesErroneas: true,
-    //                               )),
-    //                     );
+    
     showDialog(
         context: context,
         barrierDismissible: false,
@@ -190,13 +198,27 @@ class _LogInState extends State<LogIn> {
             child: CircularProgressIndicator(),
           );
         });
-    try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: correoController.text.trim(),
-          password: passwdController.text.trim());
-    } on FirebaseAuthException catch (e) {
-      print(e);
-    }
+      if (correoController.text.trim() != "" && passwdController.text.trim() != "") {
+        //print('Form is valid');
+          try {
+      
+            //await FirebaseAuth.instance.setPersistence(Persistence.NONE);
+              await FirebaseAuth.instance.signInWithEmailAndPassword(
+                  email: correoController.text.trim(),
+                  password: passwdController.text.trim());
+          } on FirebaseAuthException catch (e) {
+            print(e);
+            //Navigator.of(context).pop();
+            setState(() {
+              widget.credencialesErroneas = true;
+            });
+          }
+    
+      } else {
+        setState(() {
+          widget.credencialesErroneas = true;
+        });
+      }    
 
     Navigator.of(context).pop();
   }

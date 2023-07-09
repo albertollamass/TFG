@@ -171,9 +171,11 @@ class _AdminPagosState extends State<AdminPagos> {
                           const Text("Escribe la cantidad a ingresar:"),
                           TextFormField(
                             inputFormatters: <TextInputFormatter>[
-                              FilteringTextInputFormatter.digitsOnly
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(r'[\d+\-\.]'))
                             ],
-                            keyboardType: TextInputType.number,
+                            keyboardType: const TextInputType.numberWithOptions(
+                                signed: true, decimal: true),
                             controller: cantidadIngreso,
                           )
                         ],
@@ -187,32 +189,47 @@ class _AdminPagosState extends State<AdminPagos> {
                         ),
                         onPressed: () {
                           //print(emailSocios.toString());
-                          for (int i = 0; i < sociosOut.length; i++) {
-                            for (int j = 0; j < selectedItems.length; j++) {
-                              if (sociosOut[i].nombre == selectedItems[j]) {
-                                emailSocios.add(sociosOut[i].email.toString());
-                                final docSocio = FirebaseFirestore.instance
-                                    .collection('socios')
-                                    .doc(sociosOut[i].email);
-                                docSocio.update({
-                                  'saldo': sociosOut[i].saldo! +
-                                      int.parse(cantidadIngreso.text.trim())
-                                });
-                                //print(sociosOut[i].email.toString() + "onpress");
+                          try {
+                            for (int i = 0; i < sociosOut.length; i++) {
+                              for (int j = 0; j < selectedItems.length; j++) {
+                                if (sociosOut[i].nombre == selectedItems[j]) {
+                                  emailSocios
+                                      .add(sociosOut[i].email.toString());
+                                  final docSocio = FirebaseFirestore.instance
+                                      .collection('socios')
+                                      .doc(sociosOut[i].email);
+                                  docSocio.update({
+                                    'saldo': sociosOut[i].saldo! +
+                                        int.parse(cantidadIngreso.text.trim())
+                                  });
+                                  //print(sociosOut[i].email.toString() + "onpress");
+                                }
                               }
                             }
+
+                            addOperacion(int.parse(cantidadIngreso.text.trim()),
+                                emailSocios);
+                            sociosOut.clear();
+                            emailSocios.clear();
+                            selectedItems.clear();
+                            setState(() {
+                              selectedItems = [];
+                              emailSocios = [];
+                              cantidadIngreso.clear();
+                            });
+                            const snackBar = SnackBar(
+                              content: Text('Operacion añadida correctamente'),
+                            );
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(snackBar);
+                            Navigator.pop(context);
+                          } on FirebaseException catch (e) {
+                            const snackBar = SnackBar(
+                              content: Text('Error añadiendo operacion'),
+                            );
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(snackBar);
                           }
-                          sociosOut.clear();
-                          emailSocios.clear();
-                          selectedItems.clear();
-                          addOperacion(int.parse(cantidadIngreso.text.trim()),
-                              emailSocios);
-                          setState(() {
-                            selectedItems = [];
-                            emailSocios = [];
-                            cantidadIngreso.clear();
-                          });
-                          Navigator.pop(context);
                         },
                       ),
                       TextButton(
@@ -267,9 +284,29 @@ class _AdminPagosState extends State<AdminPagos> {
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   final historialSocios = snapshot.data!;
-                  return ListView(
-                    children: historialSocios.map(buildGestion).toList(),
-                  );
+                  if (historialSocios.isEmpty) {
+                    return Center(
+                        child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: const [
+                          Icon(
+                            Icons.payment_outlined,
+                            size: 60,
+                          ),
+                          SizedBox(
+                            height: 40,
+                          ),
+                          Text(
+                            "NO HAY TRANSACCIONES",
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
+                        ]));
+                  } else {
+                    return ListView(
+                      children: historialSocios.map(buildGestion).toList(),
+                    );
+                  }
                 } else {
                   print(snapshot.toString());
                   return const Center(

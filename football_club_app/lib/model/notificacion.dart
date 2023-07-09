@@ -17,26 +17,6 @@ class Notificacion {
     this.leida
   );
 
-  setDescripcion(String descripcion){
-    this.descripcion=descripcion;        
-  }
-
-  setReceptor(String receptor){
-    this.receptor = receptor;
-  }
-
-  setFechaEnvio(DateTime fecha){
-    fechaEnvio = fecha;
-  }  
-
-  marcarComoLeida (){
-    leida = true;
-  }
-
-
-  
-
-
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'asunto': asunto,

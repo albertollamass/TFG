@@ -1,12 +1,11 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+
 import 'package:football_club_app/controller/controlador.dart';
 import 'package:football_club_app/model/equipo.dart';
 import 'package:football_club_app/model/partido.dart';
 import 'package:football_club_app/model/socio.dart';
-import 'package:football_club_app/view/info_partido.dart';
 
 class EditarEquipos extends StatefulWidget {
   Partido partido;
@@ -93,8 +92,6 @@ class _EditarEquipos extends State<EditarEquipos> {
                                 onPressed: () async {
                                   //print(widget.partido.fechaPartido);
                                   //DateTime fecha = DateTime.fromMillisecondsSinceEpoch(widget.partido.fechaPartido);
-                                  print(
-                                      "${widget.equipos[i].color}_${widget.partido.fechaPartido}");
                                   final docEquipo = FirebaseFirestore.instance
                                       .collection('equipos')
                                       .doc(
@@ -106,7 +103,7 @@ class _EditarEquipos extends State<EditarEquipos> {
                                     docEquipo.update({
                                       'jugadores': FieldValue.arrayRemove(
                                           [widget.equipos[i].jugadores[j]])
-                                    }).whenComplete(() => print("done"));
+                                    });
                                   }
 
                                   Navigator.pop(context);
@@ -125,7 +122,7 @@ class _EditarEquipos extends State<EditarEquipos> {
                                 return alert;
                               });
                         },
-                        child: Icon(Icons.delete),
+                        child: const Icon(Icons.delete),
                       ),
                     ),
                   ],
@@ -157,41 +154,44 @@ class _EditarEquipos extends State<EditarEquipos> {
             List jugadores2 = doc2['jugadores'];
 
             widget.k = -1;
-            print("holu");
             for (int i = 0; i < widget.equipos.length; i++) {
               for (int j = 0; j < widget.equipos[i].jugadores.length; j++) {
                 widget.k++;
-                //print(widget.equipos[i].jugadores[j]);
-                //print(widget.equipoJugador[widget.k].text.trim());
-                if (!jugadores.contains(widget.equipos[i].jugadores[j]) &&
-                    "blanco" == widget.equipoJugador[widget.k].text.trim()) {
+                if ("blanco" == widget.equipoJugador[widget.k].text.trim()) {
                   docEquipoBlanco.update({
                     'jugadores':
                         FieldValue.arrayUnion([widget.equipos[i].jugadores[j]])
-                  }).whenComplete(() => print("doneUnion"));
-
+                  });
                   docEquipoNegro.update({
                     'jugadores':
                         FieldValue.arrayRemove([widget.equipos[i].jugadores[j]])
-                  }).whenComplete(() => print("doneR"));
-                } else if (!jugadores2
-                        .contains(widget.equipos[i].jugadores[j]) &&
-                    "negro" == widget.equipoJugador[widget.k].text.trim()) {
+                  });
+                } else if ("negro" ==
+                    widget.equipoJugador[widget.k].text.trim()) {
                   docEquipoBlanco.update({
                     'jugadores':
                         FieldValue.arrayRemove([widget.equipos[i].jugadores[j]])
-                  }).whenComplete(() => print("doneUnion"));
+                  });
 
                   docEquipoNegro.update({
                     'jugadores':
                         FieldValue.arrayUnion([widget.equipos[i].jugadores[j]])
-                  }).whenComplete(() => print("doneR"));
+                  });
                 }
               }
             }
+            const snackBar = SnackBar(
+              content: Text('Equipos cambiados correctamente'),
+            );
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
           } on FirebaseException catch (e) {
-            print(e.message);
+            const snackBar = SnackBar(
+              content: Text('Error cambiando equipos'),
+            );
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
           }
+
+          Navigator.pop(context);
           Navigator.pop(context);
         },
         style: styleInic,

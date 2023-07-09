@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:football_club_app/model/carta.dart';
@@ -114,7 +115,7 @@ Stream<List<Notificacion>> leerNotificaciones() {
           .toList());
 }
 
-Stream<List<Notificacion>> leerNotificacionesSocio(String email) {
+Stream<List<Notificacion>> leerNotificacionesSocio(String? email) {
   final notis = FirebaseFirestore.instance
       .collection('notificaciones')
       .where("receptor", isEqualTo: email);
@@ -256,25 +257,8 @@ Stream<List<Partido>> leerPartidos() {
           snapshot.docs.map((doc) => Partido.fromMap(doc.data())).toList());
 }
 
-Future crearEquipo(List<String> jugadores) async {
-  Equipo equipo1 =
-      Equipo(color: "negro", fechaEquipo: DateTime(2023, 6, 30), jugadores: [
-    "Antonio@gmail.com",
-    "Joaquin@gmail.com",
-    "M.Pardo@gmail.com",
-    "Sergio@gmail.com",
-    "Francis@gmail.com",
-    "Victor@gmail.com"
-  ]);
-  Equipo equipo2 =
-      Equipo(color: "blanco", fechaEquipo: DateTime(2023, 6, 30), jugadores: [
-    "rafa@gmail.com",
-    "jose@gmail.com",
-    "Juanjo@gmail.com",
-    "Nene@gmail.com",
-    "Sam@gmail.com",
-    "Joseles@gmail.com",
-  ]);
+Future crearEquipo(Equipo equipo1, Equipo equipo2) async {
+  
   final docSocio = FirebaseFirestore.instance
       .collection('equipos')
       .doc("${equipo1.color}_${equipo1.fechaEquipo}");
@@ -289,13 +273,13 @@ Future crearEquipo(List<String> jugadores) async {
   await docSocio.set(json);
 }
 
-Future crearPartido(DateTime fecha, Equipo negro, Equipo blanco) async {
+Future crearPartido(DateTime fecha) async {
   final docSocio = FirebaseFirestore.instance
       .collection('partidos')
       .doc(fecha.millisecondsSinceEpoch.toString());
 
   Partido partido =
-      Partido(fechaPartido: fecha, golesBlanco: 0, golesNegro: 0, goles: {});
+      Partido(fechaPartido: fecha, golesBlanco: 0, golesNegro: 0, goles: {}, yaEditado: false);
 
   final json = partido.toMap();
 
@@ -374,15 +358,14 @@ Future actualizarPartidosEmpate(String email) async {
   DocumentSnapshot snapshot = await docSocio.get();
 
   if (snapshot.exists) {
-    // Access the value of a specific field
-    // int pj = snapshot['partidosJugados'];
-    // int pe = snapshot['partidosEmpatados'];
-    // int pts = snapshot['puntos'];
-    // docSocio.update({
-    //     'partidosJugados': pj + 1,
-    //     'partidosEmpatados': pe + 1,
-    //     'puntos' : pts + 1
-    //   });
+    int pj = snapshot['partidosJugados'];
+    int pe = snapshot['partidosEmpatados'];
+    int pts = snapshot['puntos'];
+    docSocio.update({
+        'partidosJugados': pj + 1,
+        'partidosEmpatados': pe + 1,
+        'puntos' : pts + 1
+      });
   } 
   //actualizar en partido
 }
@@ -402,4 +385,94 @@ Stream<List<Estadisticas>> leerClasificacion() {
       (snapshot) => snapshot.docs
           .map((doc) => Estadisticas.fromMap(doc.data()))
           .toList());
+}
+
+// Future crearEstadisticasAleatorias(List<String> emails) async {
+
+//   for (int i = 0; i < emails.length; i++) {
+//     final docStats = FirebaseFirestore.instance.collection('estadisticas').doc(emails[i]);
+//     final ss = await docStats.get();
+
+//     if (ss.exists){
+//       docStats.update({
+//         'defensa' : 30 + Random().nextInt(90 - 30 + 1),
+//         'fisico' : 30 + Random().nextInt(90 - 30 + 1),
+//         'tiro': 30 + Random().nextInt(90 - 30 + 1),
+//         'pase': 30 + Random().nextInt(90 - 30 + 1),
+//         'regate': 30 + Random().nextInt(90 - 30 + 1),
+//         'ritmo': 30 + Random().nextInt(90 - 30 + 1),
+//       });
+//     }
+//   }
+
+// }
+
+Future generarEquiposAleatorios(List<String> emails, DateTime fecha) async {
+  Map<String, double> jugadores = {};
+  emails.remove("admin@gmail.com");
+  emails.shuffle();
+
+  for (int i = 0; i < emails.length; i++) {
+    final docStats = FirebaseFirestore.instance.collection('estadisticas').doc(emails[i]);
+    final ss = await docStats.get();
+    final docSocio =
+      FirebaseFirestore.instance.collection('clasificacion').doc(emails[i]);
+
+    DocumentSnapshot snapshot = await docSocio.get();
+      int pj = 0;
+      int pe = 0;
+      int pg = 0;
+      int pp = 0;
+      int goles = 0;
+    if (snapshot.exists) {
+      
+      pj = snapshot['partidosJugados'];
+      pe = snapshot['partidosEmpatados'];
+      pg = snapshot['partidosGanados'];
+      pp = snapshot['partidosPerdidos'];
+      goles = snapshot['goles'];
+    } 
+    
+    if (ss.exists){
+      double media = (ss['defensa'] + ss['fisico'] + ss['tiro'] + ss['pase'] + ss['regate'] + ss['ritmo']) / 6;
+      double relacionPartidos = (pg - pp) / (pe + 1);
+      double promedioGoles = goles / (pj+1) ;
+      final jugador = <String,double>{emails[i]: (media*relacionPartidos*promedioGoles)};
+      jugadores.addEntries(jugador.entries);
+    }
+  }
+
+  double mediaGlobal = calcularMediaGlobal(jugadores);
+
+  Map<String, double> equipoNegro = {};
+  Map<String, double> equipoBlanco = {};
+  List<String> jugNeg = [];
+  List<String> jugBlanco = [];
+  // Divide a los jugadores en dos equipos equilibrados
+  for (int i = 0; i < jugadores.length; i++) {
+    if (equipoNegro.length < 6 && (calcularMediaGlobal({...equipoNegro, ...{jugadores.keys.elementAt(i): jugadores.values.elementAt(i)}}) <= mediaGlobal)) {
+      final jugador = <String,double>{jugadores.keys.elementAt(i): jugadores.values.elementAt(i)};      
+      equipoNegro.addEntries(jugador.entries);
+      jugNeg.add(jugadores.keys.elementAt(i));
+    } else {
+      final jugador = <String,double>{jugadores.keys.elementAt(i): jugadores.values.elementAt(i)};      
+      equipoBlanco.addEntries(jugador.entries);
+      jugBlanco.add(jugadores.keys.elementAt(i));
+    }
+  }
+
+  Equipo negro = Equipo(color: "negro", fechaEquipo: fecha, jugadores: jugNeg);
+  Equipo blanco = Equipo(color: "blanco", fechaEquipo: fecha, jugadores: jugBlanco);
+
+  crearEquipo(negro, blanco); 
+
+}
+
+// Calcula el promedio de las estadísticas de los jugadores en una lista
+double calcularMediaGlobal(Map<String, double> jugadores) {
+  double totalStats = 0;
+  for (int i = 0; i < jugadores.length; i++) {
+    totalStats += jugadores.values.elementAt(i);
+  }
+  return totalStats / jugadores.length;
 }

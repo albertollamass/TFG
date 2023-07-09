@@ -26,12 +26,14 @@ class ResumenPartido extends StatefulWidget {
 }
 
 class _ResumenPartidoState extends State<ResumenPartido> {
+  List<String> cambioEnGoles = [];
   List<TextEditingController> golesJugadores = [];
   @override
   Widget build(BuildContext context) {
-    print(widget.partido.fechaPartido.millisecondsSinceEpoch);
     //crearResultado(equipos, goles);
     List<Widget> buildEquipos(List<Equipo> equipos) {
+      for (int x = 0; x < widget.partido.goles.length; x++) {}
+
       List<Widget> equiposW = [];
       final ButtonStyle styleInic = ElevatedButton.styleFrom(
           textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -78,8 +80,13 @@ class _ResumenPartidoState extends State<ResumenPartido> {
           ),
         );
         for (int j = 0; j < equipos[i].jugadores.length; j++) {
-          
-          golesJugadores.add(TextEditingController(text: "0"));          
+          golesJugadores.add(TextEditingController(
+              text: widget.partido
+                          .goles[equipos[i].jugadores[j].toLowerCase()] !=
+                      null
+                  ? widget.partido.goles[equipos[i].jugadores[j].toLowerCase()]
+                      .toString()
+                  : "0"));
           equiposW.add(Row(children: [
             i == 1
                 ? const Icon(
@@ -111,7 +118,7 @@ class _ResumenPartidoState extends State<ResumenPartido> {
                           fontWeight: FontWeight.w500, fontSize: 20),
                     );
                   } else {
-                    return const Text("no existe ese jugador");
+                    return const CircularProgressIndicator();
                   }
                 },
               ),
@@ -134,12 +141,11 @@ class _ResumenPartidoState extends State<ResumenPartido> {
                       keyboardType: TextInputType.number,
                     ),
                   )
-                // : indexGol != -1
-                //     ? Text(
-                //         goles.values.elementAt(indexGol).toString(),
-                //         style: const TextStyle(fontSize: 22),
-                //       )
-                : const Text(""),
+                : widget.partido.goles.keys.contains(equipos[i].jugadores[j]) &&
+                        widget.partido.goles[equipos[i].jugadores[j]]! > 0
+                    ? Text(widget.partido.goles[equipos[i].jugadores[j]]
+                        .toString())
+                    : const Text(""),
             const SizedBox(width: 5),
             widget.esAdmin
                 ? const Icon(
@@ -151,7 +157,13 @@ class _ResumenPartidoState extends State<ResumenPartido> {
                 //         Icons.sports_soccer,
                 //         size: 30,
                 //       )
-                : const Text(""),
+                : widget.partido.goles.keys.contains(equipos[i].jugadores[j]) &&
+                        widget.partido.goles[equipos[i].jugadores[j]]! > 0
+                    ? const Icon(
+                        Icons.sports_soccer,
+                        size: 30,
+                      )
+                    : const Text(""),
           ]));
           equiposW.add(
             const SizedBox(
@@ -165,7 +177,6 @@ class _ResumenPartidoState extends State<ResumenPartido> {
             height: 10,
           ),
         );
-        
       }
 
       equiposW.add(
@@ -173,28 +184,57 @@ class _ResumenPartidoState extends State<ResumenPartido> {
             ? ElevatedButton(
                 onPressed: () async {
                   Map<String, int> golesPartido = {};
+                  List<String> emails = [];
                   try {
-                    print(golesJugadores.length);
+                    widget.partido.golesBlanco = 0;
+                    widget.partido.golesNegro = 0;
+
                     int k = 0;
                     for (int i = 0; i < equipos.length; i++) {
                       for (int j = 0; j < equipos[i].jugadores.length; j++) {
-                        actualizarGolesJugador(equipos[i].jugadores[j].toLowerCase(),
-                            golesJugadores[k].text.trim());
-                        if (golesJugadores[k].text.trim() != "0") {
-                          final gol = <String, int>{
-                            equipos[i].jugadores[j].toLowerCase():
-                                int.parse(golesJugadores[k].text.trim())
-                          };
-                          golesPartido.addEntries(gol.entries);
-                          if (equipos[i].color == "blanco") {
-                            widget.partido.golesBlanco =
-                                widget.partido.golesBlanco +
-                                    int.parse(golesJugadores[k].text.trim());
-                          } else {
-                            widget.partido.golesNegro =
-                                widget.partido.golesNegro +
-                                    int.parse(golesJugadores[k].text.trim());
+                        emails.add(equipos[i].jugadores[j].toLowerCase());
+                        if (!widget.partido.yaEditado) {
+                          cambioEnGoles.add(golesJugadores[k].text.trim());
+                          actualizarGolesJugador(
+                              equipos[i].jugadores[j].toLowerCase(),
+                              golesJugadores[k].text.trim());
+                        } else {
+                          if (widget.partido.goles
+                              .containsKey(equipos[i].jugadores[j])) {
+                            if (widget.partido.goles[equipos[i].jugadores[j]]! <
+                                int.parse(golesJugadores[k].text.trim())) {
+                              int dif =
+                                  int.parse(golesJugadores[k].text.trim()) -
+                                      widget.partido
+                                          .goles[equipos[i].jugadores[j]]!;
+                              actualizarGolesJugador(
+                                  equipos[i].jugadores[j].toLowerCase(),
+                                  dif.toString());
+                            } else {
+                              var dif =
+                                  int.parse(golesJugadores[k].text.trim()) -
+                                      widget.partido
+                                          .goles[equipos[i].jugadores[j]]!;
+                              actualizarGolesJugador(
+                                  equipos[i].jugadores[j].toLowerCase(),
+                                  dif.toString());
+                            }
                           }
+                        }
+
+                        final gol = <String, int>{
+                          equipos[i].jugadores[j].toLowerCase():
+                              int.parse(golesJugadores[k].text.trim())
+                        };
+                        golesPartido.addEntries(gol.entries);
+                        if (equipos[i].color == "blanco") {
+                          widget.partido.golesBlanco =
+                              widget.partido.golesBlanco +
+                                  int.parse(golesJugadores[k].text.trim());
+                        } else {
+                          widget.partido.golesNegro =
+                              widget.partido.golesNegro +
+                                  int.parse(golesJugadores[k].text.trim());
                         }
                         k++;
                       }
@@ -218,34 +258,81 @@ class _ResumenPartidoState extends State<ResumenPartido> {
                       docPartido.update({
                         'golesBlanco': widget.partido.golesBlanco,
                         'golesNegro': widget.partido.golesNegro,
-                        'goles': golesPartido
+                        'goles': golesPartido,
+                        'yaEditado': true
                       });
                     }
-
-                    for (int i = 0; i < equipos.length; i++) {
-                      for (int j = 0; j < equipos[i].jugadores.length; j++) {
-                        if (blancoGanado) {
-                          if (equipos[i].color == "blanco") {
-                            actualizarPartidosGanador(equipos[i].jugadores[j].toLowerCase());
+                    if (!snapshot['yaEditado']) {
+                      for (int i = 0; i < equipos.length; i++) {
+                        for (int j = 0; j < equipos[i].jugadores.length; j++) {
+                          if (blancoGanado) {
+                            if (equipos[i].color == "blanco") {
+                              actualizarPartidosGanador(
+                                  equipos[i].jugadores[j].toLowerCase());
+                            } else {
+                              actualizarPartidosPerdedor(
+                                  equipos[i].jugadores[j].toLowerCase());
+                            }
+                          } else if (negroGanado) {
+                            if (equipos[i].color == "negro") {
+                              actualizarPartidosGanador(
+                                  equipos[i].jugadores[j].toLowerCase());
+                            } else {
+                              actualizarPartidosPerdedor(
+                                  equipos[i].jugadores[j].toLowerCase());
+                            }
                           } else {
-                            actualizarPartidosPerdedor(equipos[i].jugadores[j].toLowerCase());
+                            //print(equipos[i].jugadores[j]);
+                            actualizarPartidosEmpate(
+                                equipos[i].jugadores[j].toLowerCase());
                           }
-                        } else if (negroGanado) {
-                          if (equipos[i].color == "negro") {
-                            actualizarPartidosGanador(equipos[i].jugadores[j].toLowerCase());
-                          } else {
-                            actualizarPartidosPerdedor(equipos[i].jugadores[j].toLowerCase());
-                          }
-                        } else {
-                          //print(equipos[i].jugadores[j]);
-                          actualizarPartidosEmpate(equipos[i].jugadores[j].toLowerCase());
                         }
                       }
                     }
                     golesJugadores.clear();
+                    const snackBar = SnackBar(
+                      content: Text('Resultado editado correctamente'),
+                    );
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
                   } on FirebaseException catch (e) {
-                    print(e.message);
+                    const snackBar = SnackBar(
+                      content: Text('Error editando resultado'),
+                    );
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
                   }
+                  if (!widget.partido.yaEditado) {
+                    DateTime sigPartido = widget.partido.fechaPartido
+                        .add(const Duration(days: 7));
+                    Equipo equipo1 = Equipo(
+                        color: "negro",
+                        fechaEquipo: sigPartido,
+                        jugadores: [
+                          "antonio@gmail.com",
+                          "joaquin@gmail.com",
+                          "m.pardo@gmail.com",
+                          "sergio@gmail.com",
+                          "francis@gmail.com",
+                          "victor@gmail.com"
+                        ]);
+                    Equipo equipo2 = Equipo(
+                        color: "blanco",
+                        fechaEquipo: sigPartido,
+                        jugadores: [
+                          "rafa@gmail.com",
+                          "jose@gmail.com",
+                          "juanjo@gmail.com",
+                          "nene@gmail.com",
+                          "sam@gmail.com",
+                          "joseles@gmail.com",
+                        ]);
+                    crearEquipo(equipo1, equipo2);
+                    crearPartido(sigPartido);
+                    enviarNotificacion(
+                        "Partido ${sigPartido.day}-${sigPartido.month}",
+                        "Se recuerda que el próximo partido será el ${sigPartido.day}-${sigPartido.month} a las 20:00",
+                        emails);
+                  }
+
                   Navigator.pop(context);
                 },
                 style: styleInic,
@@ -268,14 +355,14 @@ class _ResumenPartidoState extends State<ResumenPartido> {
                     color: Colors.black,
                     borderRadius: BorderRadius.circular(100),
                     border: Border.all(width: 2, color: Colors.white))),
-            widget.partido.golesNegro >= 0
+            widget.partido.yaEditado
                 ? Text(
                     widget.partido.golesNegro.toString(),
                     style: const TextStyle(fontSize: 45),
                   )
                 : const Text(""),
             const Text(" - ", style: TextStyle(fontSize: 45)),
-            widget.partido.golesBlanco >= 0
+            widget.partido.yaEditado
                 ? Text(widget.partido.golesBlanco.toString(),
                     style: const TextStyle(fontSize: 45))
                 : const Text(""),
@@ -337,24 +424,17 @@ class _ResumenPartidoState extends State<ResumenPartido> {
                               onTap: () async {
                                 DateTime? pickedDate = await showDatePicker(
                                     context: context,
-                                    initialDate: widget.partido
-                                        .fechaPartido, //get today's date
-                                    firstDate: DateTime(
-                                        2000), //DateTime.now() - not to allow to choose before today.
+                                    initialDate: widget.partido.fechaPartido,
+                                    firstDate: DateTime(2000),
                                     lastDate: DateTime(2101));
 
                                 if (pickedDate != null) {
-                                  print(
-                                      pickedDate); //get the picked date in the format => 2022-07-04 00:00:00.000
-                                  //You can format date as per your need
+                                  print(pickedDate);
 
                                   setState(() {
-                                    widget.partido.fechaPartido =
-                                        pickedDate; //set foratted date to TextField value.
+                                    widget.partido.fechaPartido = pickedDate;
                                   });
-                                } else {
-                                  print("Date is not selected");
-                                }
+                                } else {}
                               },
                             )
                           : const Text("")

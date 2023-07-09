@@ -55,7 +55,7 @@ class _SaldoState extends State<Saldo> {
               final user = snapshot.data;
               if (user == null) {
                 return const Center(
-                  child: Text("nono"),
+                  child: Text(""),
                 );
               } else {
                 return Center(
