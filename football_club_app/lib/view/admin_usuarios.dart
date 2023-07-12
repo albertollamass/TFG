@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cron/cron.dart';
 import 'package:flutter/material.dart';
 import 'package:football_club_app/controller/controlador.dart';
 import 'package:football_club_app/view/crear.dart';
-
 
 import '../model/socio.dart';
 import 'admin_crear_usuario.dart';
@@ -16,11 +16,9 @@ class AdminUsuarios extends StatefulWidget {
 }
 
 class _AdminUsuariosState extends State<AdminUsuarios> {
-
   @override
   Widget build(BuildContext context) {
-
-    Widget buildSocio (Socio socio) {
+    Widget buildSocio(Socio socio) {
       return Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -79,20 +77,19 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                       style: TextStyle(color: Color(0xffD01E1E)),
                     ),
                     onPressed: () {
-                      
                       final docSocio = FirebaseFirestore.instance
-                                        .collection('socios').doc('${socio.email}');
+                          .collection('socios')
+                          .doc('${socio.email}');
                       docSocio.delete();
-                      Navigator.pop(context);  
-                      const snackBar =  SnackBar(
+                      Navigator.pop(context);
+                      const snackBar = SnackBar(
                         content: Text('Usuario eliminado correctamente'),
                       );
                       ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                    
                     },
                   ),
                   TextButton(
-                    child: const Text("Cancel"),
+                    child: const Text("Cancelar"),
                     onPressed: () => {Navigator.pop(context)},
                   )
                 ],
@@ -144,6 +141,16 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               final socios = snapshot.data!;
+              List<String> emails = [];
+              for (int i = 0; i < socios.length; i++) {
+                emails.add(socios[i].email.toString());
+              }
+              var cron = Cron();
+
+              cron.schedule(Schedule.parse('0 0 1 * *'), () {
+                addOperacion(-20, emails);
+                enviarNotificacion("Pago mensualidad", "Recordatorio de que se debe pagar la mensualidad del mes de $monthToString(${DateTime.now().month}", emails);
+              });
               return Center(
                   child: Container(
                 height: 780,

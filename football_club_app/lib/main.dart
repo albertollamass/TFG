@@ -7,9 +7,7 @@ import 'firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-  
-    options: DefaultFirebaseOptions.currentPlatform);
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
@@ -22,6 +20,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    //Definición del esquema de colores de la App
     Map<int, Color> color = {
       50: const Color.fromRGBO(43, 78, 161, .1),
       100: const Color.fromRGBO(43, 78, 161, .2),
@@ -43,15 +43,17 @@ class MyApp extends StatelessWidget {
         primarySwatch: MaterialColor(0xff2B4EA1, color),
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
+      //Redireccionamos a página de bienvenida
       home: const LogRegister(),
+      //Hacemos que el tamaño de letra sea el mismo en todos los dispositivos sin importar la configuracion del mismo
       builder: (context, child) {
-          final mediaQueryData = MediaQuery.of(context);
-          final scale = mediaQueryData.textScaleFactor.clamp(1.0, 1.3);
-          return MediaQuery(
-            data: MediaQuery.of(context).copyWith(textScaleFactor: scale),
-            child: child!,
-          );
-        },
+        final mediaQueryData = MediaQuery.of(context);
+        final scale = mediaQueryData.textScaleFactor.clamp(1.0, 1.3);
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(textScaleFactor: scale),
+          child: child!,
+        );
+      },
     );
   }
 }

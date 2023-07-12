@@ -145,12 +145,26 @@ Stream<List<Partido>> leerUltimoPartido() {
 Future addOperacion(int cantidad, List<String> emails) async {
   print(emails.length);
   for (int i = 0; i < emails.length; i++) {
-    final docSocio = FirebaseFirestore.instance.collection('historial').doc();
+    final docHistSocio =
+        FirebaseFirestore.instance.collection('historial').doc();
     final operation = GestionMonedero(
         cantidad: cantidad, email: emails[i], fecha: DateTime.now());
 
     final json = operation.toMap();
-    await docSocio.set(json);
+    await docHistSocio.set(json);
+
+    final docSocio =
+        FirebaseFirestore.instance.collection('socios').doc(emails[i]);
+
+    DocumentSnapshot snapshot = await docSocio.get();
+
+    if (snapshot.exists) {
+      // Access the value of a specific field
+      int saldo = snapshot['saldo'];
+      docSocio.update({
+        'saldo': saldo + cantidad,
+      });
+    }
   }
 }
 
@@ -258,7 +272,6 @@ Stream<List<Partido>> leerPartidos() {
 }
 
 Future crearEquipo(Equipo equipo1, Equipo equipo2) async {
-  
   final docSocio = FirebaseFirestore.instance
       .collection('equipos')
       .doc("${equipo1.color}_${equipo1.fechaEquipo}");
@@ -278,8 +291,12 @@ Future crearPartido(DateTime fecha) async {
       .collection('partidos')
       .doc(fecha.millisecondsSinceEpoch.toString());
 
-  Partido partido =
-      Partido(fechaPartido: fecha, golesBlanco: 0, golesNegro: 0, goles: {}, yaEditado: false);
+  Partido partido = Partido(
+      fechaPartido: fecha,
+      golesBlanco: 0,
+      golesNegro: 0,
+      goles: {},
+      yaEditado: false);
 
   final json = partido.toMap();
 
@@ -306,7 +323,7 @@ Future actualizarGolesJugador(String email, String goles) async {
     // Access the value of a specific field
     int fieldValue = snapshot['goles'];
     docSocio.update({'goles': fieldValue + int.parse(goles)});
-  } 
+  }
   //actualizar en partido
 }
 
@@ -323,11 +340,11 @@ Future actualizarPartidosGanador(String email) async {
     int pg = snapshot['partidosGanados'];
     int pts = snapshot['puntos'];
     docSocio.update({
-        'partidosJugados': pj + 1,
-        'partidosGanados': pg + 1,
-        'puntos': pts + 3
-      });
-  } 
+      'partidosJugados': pj + 1,
+      'partidosGanados': pg + 1,
+      'puntos': pts + 3
+    });
+  }
   //actualizar en partido
 }
 
@@ -343,10 +360,10 @@ Future actualizarPartidosPerdedor(String email) async {
     int pj = snapshot['partidosJugados'];
     int pp = snapshot['partidosPerdidos'];
     docSocio.update({
-        'partidosJugados': pj + 1,
-        'partidosPerdidos': pp + 1,
-      });
-  } 
+      'partidosJugados': pj + 1,
+      'partidosPerdidos': pp + 1,
+    });
+  }
   //actualizar en partido
 }
 
@@ -362,11 +379,11 @@ Future actualizarPartidosEmpate(String email) async {
     int pe = snapshot['partidosEmpatados'];
     int pts = snapshot['puntos'];
     docSocio.update({
-        'partidosJugados': pj + 1,
-        'partidosEmpatados': pe + 1,
-        'puntos' : pts + 1
-      });
-  } 
+      'partidosJugados': pj + 1,
+      'partidosEmpatados': pe + 1,
+      'puntos': pts + 1
+    });
+  }
   //actualizar en partido
 }
 
@@ -413,31 +430,39 @@ Future generarEquiposAleatorios(List<String> emails, DateTime fecha) async {
   emails.shuffle();
 
   for (int i = 0; i < emails.length; i++) {
-    final docStats = FirebaseFirestore.instance.collection('estadisticas').doc(emails[i]);
+    final docStats =
+        FirebaseFirestore.instance.collection('estadisticas').doc(emails[i]);
     final ss = await docStats.get();
     final docSocio =
-      FirebaseFirestore.instance.collection('clasificacion').doc(emails[i]);
+        FirebaseFirestore.instance.collection('clasificacion').doc(emails[i]);
 
     DocumentSnapshot snapshot = await docSocio.get();
-      int pj = 0;
-      int pe = 0;
-      int pg = 0;
-      int pp = 0;
-      int goles = 0;
+    int pj = 0;
+    int pe = 0;
+    int pg = 0;
+    int pp = 0;
+    int goles = 0;
     if (snapshot.exists) {
-      
       pj = snapshot['partidosJugados'];
       pe = snapshot['partidosEmpatados'];
       pg = snapshot['partidosGanados'];
       pp = snapshot['partidosPerdidos'];
       goles = snapshot['goles'];
-    } 
-    
-    if (ss.exists){
-      double media = (ss['defensa'] + ss['fisico'] + ss['tiro'] + ss['pase'] + ss['regate'] + ss['ritmo']) / 6;
+    }
+
+    if (ss.exists) {
+      double media = (ss['defensa'] +
+              ss['fisico'] +
+              ss['tiro'] +
+              ss['pase'] +
+              ss['regate'] +
+              ss['ritmo']) /
+          6;
       double relacionPartidos = (pg - pp) / (pe + 1);
-      double promedioGoles = goles / (pj+1) ;
-      final jugador = <String,double>{emails[i]: (media*relacionPartidos*promedioGoles)};
+      double promedioGoles = goles / (pj + 1);
+      final jugador = <String, double>{
+        emails[i]: (media * relacionPartidos * promedioGoles)
+      };
       jugadores.addEntries(jugador.entries);
     }
   }
@@ -450,22 +475,31 @@ Future generarEquiposAleatorios(List<String> emails, DateTime fecha) async {
   List<String> jugBlanco = [];
   // Divide a los jugadores en dos equipos equilibrados
   for (int i = 0; i < jugadores.length; i++) {
-    if (equipoNegro.length < 6 && (calcularMediaGlobal({...equipoNegro, ...{jugadores.keys.elementAt(i): jugadores.values.elementAt(i)}}) <= mediaGlobal)) {
-      final jugador = <String,double>{jugadores.keys.elementAt(i): jugadores.values.elementAt(i)};      
+    if (equipoNegro.length < 6 &&
+        (calcularMediaGlobal({
+              ...equipoNegro,
+              ...{jugadores.keys.elementAt(i): jugadores.values.elementAt(i)}
+            }) <=
+            mediaGlobal)) {
+      final jugador = <String, double>{
+        jugadores.keys.elementAt(i): jugadores.values.elementAt(i)
+      };
       equipoNegro.addEntries(jugador.entries);
       jugNeg.add(jugadores.keys.elementAt(i));
     } else {
-      final jugador = <String,double>{jugadores.keys.elementAt(i): jugadores.values.elementAt(i)};      
+      final jugador = <String, double>{
+        jugadores.keys.elementAt(i): jugadores.values.elementAt(i)
+      };
       equipoBlanco.addEntries(jugador.entries);
       jugBlanco.add(jugadores.keys.elementAt(i));
     }
   }
 
   Equipo negro = Equipo(color: "negro", fechaEquipo: fecha, jugadores: jugNeg);
-  Equipo blanco = Equipo(color: "blanco", fechaEquipo: fecha, jugadores: jugBlanco);
+  Equipo blanco =
+      Equipo(color: "blanco", fechaEquipo: fecha, jugadores: jugBlanco);
 
-  crearEquipo(negro, blanco); 
-
+  crearEquipo(negro, blanco);
 }
 
 // Calcula el promedio de las estadísticas de los jugadores en una lista
@@ -475,4 +509,8 @@ double calcularMediaGlobal(Map<String, double> jugadores) {
     totalStats += jugadores.values.elementAt(i);
   }
   return totalStats / jugadores.length;
+}
+
+Future cobrarMensualidad(List<String> emails) async {
+  addOperacion(-20, emails);
 }

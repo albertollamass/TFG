@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:football_club_app/controller/controlador.dart';
-import 'package:football_club_app/model/socio.dart';
 import 'package:football_club_app/view/log_register.dart';
 
 class Register extends StatefulWidget {
-  Register({super.key, required this.privacidad});
+  Register({super.key, required this.privacidad, required this.obligatoriedad});
   late bool privacidad;
+  late bool obligatoriedad;
   @override
   State<Register> createState() => _RegisterState();
 }
@@ -109,10 +109,10 @@ class _RegisterState extends State<Register> {
               const SizedBox(
                 height: 10,
               ),
-              Text(
+              widget.obligatoriedad ? Text(
                 "(*) Obligatorio",
                 style: TextStyle(fontSize: 16, color: Colors.red[400]),
-              ),
+              ) : const SizedBox(),
               const SizedBox(
                 height: 30,
               ),
@@ -155,7 +155,7 @@ class _RegisterState extends State<Register> {
               ),
               ElevatedButton(
                 onPressed: (() async => {
-                      if (aceptarPoliticas && (nameController.text.trim() != "" && surnameController.text.trim() != "" && emailController.text.trim() != "" && passwdController.text.trim() != "" && comprobarPass(passwdController.text.trim(), cpasswdController.text.trim())))
+                      if (aceptarPoliticas && (nameController.text.trim() != "" && surnameController.text.trim() != "" && emailController.text.trim() != "" && passwdController.text.trim() != "" && cpasswdController.text.trim() != "" && comprobarPass(passwdController.text.trim(), cpasswdController.text.trim())))
                         {
                           crearSolicitud(
                             nameController.text,
@@ -172,7 +172,7 @@ class _RegisterState extends State<Register> {
                                 builder: (context) => const LogRegister()),
                           )
                         }
-                      else if (!aceptarPoliticas)
+                      else if (!aceptarPoliticas && nameController.text.trim() == "" || surnameController.text.trim() == "" || emailController.text.trim() == "" || passwdController.text.trim() == "" || cpasswdController.text.trim() == "")
                         {
                           // Navigator.push(
                           // context,
@@ -181,12 +181,17 @@ class _RegisterState extends State<Register> {
                           //)
                           setState(
                             () {
+                              widget.obligatoriedad = true;
                               widget.privacidad = true;
                             },
                           )
                         } else if (!comprobarPass(passwdController.text.trim(), cpasswdController.text.trim())){
 
-                        }
+                        } else if (nameController.text.trim() == "" || surnameController.text.trim() == "" || emailController.text.trim() == "" || passwdController.text.trim() == "" || cpasswdController.text.trim() == ""){
+                          setState(() {
+                            widget.obligatoriedad = true;
+                          },)
+                        } 
                     }),
                 style: styleInic,
                 child: const Center(

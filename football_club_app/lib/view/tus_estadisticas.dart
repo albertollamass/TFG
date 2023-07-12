@@ -82,9 +82,9 @@ class _TusEstadisticasState extends State<TusEstadisticas> {
                                   Container(
                                     // color: Colors.amber,
                                     padding: const EdgeInsets.fromLTRB(
-                                        40, 30, 40, 0),
+                                        40, 0, 40, 0),
                                     alignment: Alignment.centerRight,
-                                    height: 500,
+                                    height: 300,
                                     width: screenWidth,
                                     child: Center(
                                       child: Column(

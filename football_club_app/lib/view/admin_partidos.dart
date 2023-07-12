@@ -290,7 +290,7 @@ class _AdminPartidosState extends State<AdminPartidos> {
                                       },
                                     ),
                                     TextButton(
-                                      child: const Text("Cancel"),
+                                      child: const Text("Cancelar"),
                                       onPressed: () => {Navigator.pop(context)},
                                     )
                                   ],

@@ -46,6 +46,7 @@ dependencies:
   cloud_firestore: ^4.8.1
   firebase_auth: ^4.6.3
   shared_preferences: ^2.2.0
+  cron: ^0.5.1
 
 dev_dependencies:
   flutter_test:

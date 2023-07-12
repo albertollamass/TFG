@@ -11,6 +11,7 @@ class EditarEquipos extends StatefulWidget {
   Partido partido;
   List<Equipo> equipos;
   List<TextEditingController> equipoJugador = [];
+  
   int k = -1;
   EditarEquipos({
     Key? key,
@@ -26,12 +27,16 @@ class _EditarEquipos extends State<EditarEquipos> {
       textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
       backgroundColor: const Color(0xff3C3577),
       padding: const EdgeInsets.fromLTRB(30.0, 16.0, 30.0, 16.0));
+  List<String> items = ["blanco", "negro"];
+  List<String> equipoJugador2 = ["blanco", "blanco", "blanco", "blanco", "blanco", "blanco", "negro", "negro", "negro", "negro", "negro", "negro", ];
   @override
   Widget build(BuildContext context) {
+    
     const backgroundColor = Color.fromARGB(255, 243, 242, 248);
     List<Widget> buildTeams() {
+      widget.k = -1;
       List<Widget> res = [];
-
+      int v = 0;
       for (int i = 0; i < widget.equipos.length; i++) {
         res.add(Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -57,6 +62,7 @@ class _EditarEquipos extends State<EditarEquipos> {
                 final socio = snapshot.data!;
                 widget.equipoJugador
                     .add(TextEditingController(text: widget.equipos[i].color));
+                //equipoJugador2.add(widget.equipos[i].color);
                 widget.k++;
                 return Row(
                   children: [
@@ -71,8 +77,15 @@ class _EditarEquipos extends State<EditarEquipos> {
                     ),
                     SizedBox(
                       width: MediaQuery.of(context).size.width / 6,
-                      child: TextFormField(
-                        controller: widget.equipoJugador[widget.k],
+                      child: DropdownButton<String>(
+                        value: i == 0 ? equipoJugador2[(j+1) - 1]
+                          : equipoJugador2[6+((j+1) - 1)],
+                        items: items
+                                .map((item) => DropdownMenuItem<String>(value: item,child: Text(item),)).toList(),
+                        onChanged: ((value) => setState(() {
+                          i == 0 ? equipoJugador2[(j+1) - 1] = value.toString()
+                          : equipoJugador2[6+((j+1) - 1)] = value.toString();                          
+                        })),
                       ),
                     ),
                     SizedBox(
@@ -99,7 +112,9 @@ class _EditarEquipos extends State<EditarEquipos> {
                                   DocumentSnapshot doc = await docEquipo.get();
                                   List jugadores = doc['jugadores'];
                                   if (jugadores.contains(
-                                      widget.equipos[i].jugadores[j])) {
+                                      widget.equipos[i].jugadores[j])) {                                    
+
+                                    equipoJugador2.removeAt(i == 0 ? (j+1) - 1 : 6+((j+1) - 1));
                                     docEquipo.update({
                                       'jugadores': FieldValue.arrayRemove(
                                           [widget.equipos[i].jugadores[j]])
@@ -135,9 +150,11 @@ class _EditarEquipos extends State<EditarEquipos> {
           res.add(const SizedBox(
             height: 20,
           ));
+          v++;
         }
       }
-
+      
+      v= 0;
       res.add(ElevatedButton(
         onPressed: () async {
           try {
@@ -157,7 +174,7 @@ class _EditarEquipos extends State<EditarEquipos> {
             for (int i = 0; i < widget.equipos.length; i++) {
               for (int j = 0; j < widget.equipos[i].jugadores.length; j++) {
                 widget.k++;
-                if ("blanco" == widget.equipoJugador[widget.k].text.trim()) {
+                if ("blanco" == equipoJugador2[widget.k]) {
                   docEquipoBlanco.update({
                     'jugadores':
                         FieldValue.arrayUnion([widget.equipos[i].jugadores[j]])
@@ -167,7 +184,7 @@ class _EditarEquipos extends State<EditarEquipos> {
                         FieldValue.arrayRemove([widget.equipos[i].jugadores[j]])
                   });
                 } else if ("negro" ==
-                    widget.equipoJugador[widget.k].text.trim()) {
+                    equipoJugador2[widget.k]) {
                   docEquipoBlanco.update({
                     'jugadores':
                         FieldValue.arrayRemove([widget.equipos[i].jugadores[j]])

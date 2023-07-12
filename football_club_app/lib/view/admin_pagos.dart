@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cron/cron.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:football_club_app/controller/controlador.dart';
@@ -194,14 +195,7 @@ class _AdminPagosState extends State<AdminPagos> {
                               for (int j = 0; j < selectedItems.length; j++) {
                                 if (sociosOut[i].nombre == selectedItems[j]) {
                                   emailSocios
-                                      .add(sociosOut[i].email.toString());
-                                  final docSocio = FirebaseFirestore.instance
-                                      .collection('socios')
-                                      .doc(sociosOut[i].email);
-                                  docSocio.update({
-                                    'saldo': sociosOut[i].saldo! +
-                                        int.parse(cantidadIngreso.text.trim())
-                                  });
+                                      .add(sociosOut[i].email.toString());                                  
                                   //print(sociosOut[i].email.toString() + "onpress");
                                 }
                               }
@@ -209,6 +203,7 @@ class _AdminPagosState extends State<AdminPagos> {
 
                             addOperacion(int.parse(cantidadIngreso.text.trim()),
                                 emailSocios);
+                            
                             sociosOut.clear();
                             emailSocios.clear();
                             selectedItems.clear();
