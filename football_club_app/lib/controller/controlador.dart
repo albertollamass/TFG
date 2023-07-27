@@ -143,8 +143,9 @@ Stream<List<Partido>> leerUltimoPartido() {
 }
 
 Future addOperacion(int cantidad, List<String> emails) async {
-  print(emails.length);
   for (int i = 0; i < emails.length; i++) {
+    print(emails[i].toLowerCase());
+
     final docHistSocio =
         FirebaseFirestore.instance.collection('historial').doc();
     final operation = GestionMonedero(
@@ -152,12 +153,14 @@ Future addOperacion(int cantidad, List<String> emails) async {
 
     final json = operation.toMap();
     await docHistSocio.set(json);
+  }
+}
 
+Future actualizaSaldo(int cantidad, List<String> emails) async {
+  for (int i = 0; i < emails.length; i++) {
     final docSocio =
-        FirebaseFirestore.instance.collection('socios').doc(emails[i]);
-
+        FirebaseFirestore.instance.collection('socios').doc("juanjo@gmail.com");
     DocumentSnapshot snapshot = await docSocio.get();
-
     if (snapshot.exists) {
       // Access the value of a specific field
       int saldo = snapshot['saldo'];

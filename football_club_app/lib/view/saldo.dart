@@ -123,7 +123,6 @@ class _SaldoState extends State<Saldo> {
                 );
               }
             } else {
-              print(snapshot.error.toString());
               return const Center(
                 child: CircularProgressIndicator(),
               );

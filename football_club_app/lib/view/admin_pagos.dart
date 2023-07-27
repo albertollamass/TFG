@@ -40,7 +40,6 @@ class _AdminPagosState extends State<AdminPagos> {
 
                 return MultiSelect(items: nombreSocios);
               } else {
-                print("nodata");
                 return const Text("e");
               }
             },
@@ -203,6 +202,7 @@ class _AdminPagosState extends State<AdminPagos> {
 
                             addOperacion(int.parse(cantidadIngreso.text.trim()),
                                 emailSocios);
+                            actualizaSaldo(int.parse(cantidadIngreso.text.trim()), emailSocios);
                             
                             sociosOut.clear();
                             emailSocios.clear();
@@ -303,7 +303,6 @@ class _AdminPagosState extends State<AdminPagos> {
                     );
                   }
                 } else {
-                  print(snapshot.toString());
                   return const Center(
                     child: CircularProgressIndicator(),
                   );
